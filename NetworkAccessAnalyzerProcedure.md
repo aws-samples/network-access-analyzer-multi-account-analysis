@@ -108,7 +108,7 @@ Large scale deployment and automation are achieved through the use of bash scrip
    Use vi /usr/local/naa/naa-script.sh and review the top portion of the script  
     - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
         >Default Value: allaccounts
-    - REGION_LIST (SPACE DELIMITED): Specify regions to execute commands in
+    - REGION_LIST (SPACE DELIMITED): Specify regions to analyze with Network Access Analyzer
         >Default Value: us-east-1 - Initially set via CFT parameter
     - IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account execution
         >Default Value: NAAExecRole - Initially set via CFT parameter
@@ -117,18 +117,18 @@ Large scale deployment and automation are achieved through the use of bash scrip
         - Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
         - Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
         - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
-    - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope.  This tag is used to locate the scope for analysis
+    - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
         >Default Value: naa-external-ingress - Initially set via CFT parameter
     - Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
         >Default Value: naa-exclusions.csv - Initially set via CFT parameter
     - Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
         >Default Value: naa-scope.json
-    - Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the exclusion_file may be located
+    - Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the EXCLUSIONS_FILE may be located.
         >Default Value: Configured during deployment to utilize the S3 bucket provisioned by the CFT.
     - Configure PARALLELISM for the number of accounts to process simultaneously
         >Default Value: 10 - Initially set via CFT parameter
     - Configure S3_EXCLUSION_FILE is set to true by default.  This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE and overwrites the local copy on EC2 upon script execution.  
-    Set to false to utilize a local exclusion file without the s3 download copy
+        Set to false to utilize a local exclusion file without the S3 download copy
         >Default Value: true
 
 3. Execute the script with with screen  
