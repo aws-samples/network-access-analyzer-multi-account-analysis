@@ -4,6 +4,9 @@
 
 This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV which does not yet exist natively within Network Access Analyzer. (Future roadmap items)
 
+The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
+The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
+
 # Overview
 
 Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
@@ -11,9 +14,6 @@ Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to de
 Resources are provisioned via CloudFormation templates with tunable parameters at the time of deployment, as well as through the naa-script.sh script.
 
 Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
-
-The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
-The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
 
 Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
