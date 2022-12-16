@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: | 
+  This template creates an AWS IAM Role which can be assumed by the NAAEC2Role
+  
+Parameters:
+  AuthorizedARN:
+    Description: "ARN of IAM Admin Role which is authorized to assume the NAAExecRole role. (e.g. arn:${AWS::Partition}:iam::*:role/NAAEC2Role)"
+    Type: String
+    
+  NAAExecRoleName:
+    Description: "Name of the IAM role that will have these policies attached."
+    Type: String
+    Default: "NAAExecRole"
+
+Resources:
+  NAAExecRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W11
+            reason: "The resource must remain as * in order to process all resources in the account"
+          - id: W28
+            reason: "The IAM Role name is specified as an explicit for use within the scripting"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub ${AuthorizedARN}
+            Action: "sts:AssumeRole"
+      MaxSessionDuration: 43200
+      RoleName: !Sub ${NAAExecRoleName}
+      Policies: 
+        - PolicyName: NAAExecRolePrivileges
+          PolicyDocument:
+            Version : "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Sid: ActionsPermittedForScriptAccountListGenerationREQUIRED
+              Action:
+                - "organizations:ListAccounts"
+              Resource: "*"
+            - Effect: Allow
+              Sid: ActionsPermittedForCustomScriptCommands
+              Action:
+                - "s3:ListBucket"
+                - "s3:ListAllMyBuckets"
+                - "s3:GetEncryptionConfiguration"
+                - "cloudformation:DescribeStacks"
+                - "cloudformation:ListStackResources"
+                - "ec2:CreateNetworkInsightsAccessScope"
+                - "ec2:CreateTags"
+                - "ec2:DeleteNetworkInsightsAccessScopeAnalysis"
+                - "ec2:DeleteNetworkInsightsAccessScope"
+                - "ec2:DeleteTags"
+                - "ec2:Describe*"
+                - "ec2:Get*"
+                - "ec2:SearchTransitGatewayRoutes"
+                - "ec2:StartNetworkInsightsAccessScopeAnalysis"
+                - "elasticloadbalancing:Describe*"
+                - "network-firewall:Describe*"
+                - "resource-groups:ListGroupResources"
+                - "tag:GetResources"
+                - "tiros:CreateQuery"
+                - "tiros:GetQueryAnswer"
+                - "directconnect:DescribeVirtualInterfaces"
+                - "network-firewall:ListFirewallRuleGroups"
+                - "network-firewall:ListFirewalls"
+                - "directconnect:DescribeDirectConnectGateways"
+              Resource: "*"

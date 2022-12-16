@@ -1,17 +1,68 @@
-## My Project
+# Summary
 
-TODO: Fill this README out!
+[Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
-Be sure to:
+This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV which does not yet exist natively within Network Access Analzyer. (Future roadmap items)
 
-* Change the title in this README
-* Edit your repository description on GitHub
+# Overview
 
-## Security
+Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+Resources are provisioned via CloudFormation templates with tunable parameters at the time of deployment, as well as through the naa-script.sh script.
 
-## License
+Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
+The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
 
+Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
+
+[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
+
+Step by step deployment and usage is provided via the NetworkAccessAnalyzerProcedure.md document.
+
+# Example Output (Sanitized)
+
+**AWS Account list generation**  
+![AWS Account list generation](docs/images/AWSAccountInventory.png)
+
+**AWS Account Analysis**  
+![AWS Account Analysis](docs/images/AWSAccountAnalysis.png)
+
+**Report Example (Split into two halves)**  
+![ReportExample01](docs/images/ReportExample01.png)
+![ReportExample02](docs/images/ReportExample02.png)
+
+# Files
+
+- NetworkAccessAnalyzerProcedure.md:  
+    Step by step instructions for provisioning IAM Roles, EC2 Instance, and usage.
+
+- naa-script.sh:  
+    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole” in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution. 
+    >Note: This script has tunable variables within the script itself (See appendix for more details). This script is provided independently from the CFT for reference.
+
+- naa-resources.yaml:  
+    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The IAM-NAAExecRole is dependent on this template being deployed first.  Note: If this stack is deleted and redeployed, the NAArExecRole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
+
+- IAM-NAAExecRole.yaml:  
+    A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
+
+- naa-exclusions.csv:  
+    CSV formatted file which allows known good findings to be excluded from future analysis finding output. Findings are pattern matched and must be exact.  
+
+    Format:  
+    resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
+    eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80  
+
+- naa-findings2csv.py:  
+    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
+
+# References:
+
+[What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
+[Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)
+
+# Link to APG Artifact (Authorized Access Only)
+
+https://apg-library.amazonaws.com/content/111111111111111111111fix
