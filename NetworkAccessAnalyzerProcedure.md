@@ -29,7 +29,8 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 # Limitations
 
-Network Access Analyzer analyzes resources within a single account.  Cross account dataflows are not currently processed. (Future Network Access Analyzer roadmap item)
+Network Access Analyzer analyzes resources within a single account.
+Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
 
 # Target technology stack  
 
@@ -75,9 +76,10 @@ Large scale deployment and automation are achieved through the use of bash scrip
     >Note: This script has tunable variables within the script itself (See appendix for more details). This script is provided independently from the CFT for reference.
 
 - naa-resources.yaml:  
-    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The IAM-NAAExecRole is dependent on this template being deployed first.  Note: If this stack is deleted and redeployed, the NAArExecRole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
+    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The NAAExecRole IAM Role is dependent on this template being deployed first.  
+    >Note: If this stack is deleted and redeployed, the naa-execrole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
 
-- IAM-NAAExecRole.yaml:  
+- naa-execrole.yaml:  
     A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
 
 - naa-exclusions.csv:  
@@ -104,20 +106,30 @@ Large scale deployment and automation are achieved through the use of bash scrip
 2. Log into the EC2 instance with SSM Connect and update the variables of the naa-script.sh file.  
    sudo -i  
    Use vi /usr/local/naa/naa-script.sh and review the top portion of the script  
-    - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave allaccounts to detect and execute against all accounts in the AWS Org
+    - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
+        >Default Value: allaccounts
     - REGION_LIST (SPACE DELIMITED): Specify regions to execute commands in
-    - IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account.
+        >Default Value: us-east-1 - Initially set via CFT parameter
+    - IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account execution
+        >Default Value: NAAExecRole - Initially set via CFT parameter
     - SCRIPT_EXECUTION_MODE:
-        - Specify CREATE_ANALYZE to direct the script to create NAA scopes (if they don't exist aleady) and analyze them
-        - Specify DELETE to direct the script to delete NAA scopes which have been provisioned (located by scope name tag)
-        - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the NAA JSON file, and then execute with CREATE_ANALYZE
+        >Default Value: CREATE_ANALYZE
+        - Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
+        - Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
+        - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
     - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope.  This tag is used to locate the scope for analysis
-    - Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the json to csv conversion
+        >Default Value: naa-external-ingress - Initially set via CFT parameter
+    - Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
+        >Default Value: naa-exclusions.csv - Initially set via CFT parameter
     - Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
+        >Default Value: naa-scope.json
     - Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the exclusion_file may be located
+        >Default Value: Configured during deployment to utilize the S3 bucket provisioned by the CFT.
     - Configure PARALLELISM for the number of accounts to process simultaneously
+        >Default Value: 10 - Initially set via CFT parameter
     - Configure S3_EXCLUSION_FILE is set to true by default.  This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE and overwrites the local copy on EC2 upon script execution.  
     Set to false to utilize a local exclusion file without the s3 download copy
+        >Default Value: true
 
 3. Execute the script with with screen  
     In order to avoid a timeout to session manager or the ssh session when executing the script, run screen first and then /usr/local/bin/naa/naa-script.sh  

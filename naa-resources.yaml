@@ -23,6 +23,9 @@ Metadata:
           default: "S3 Configuration"
         Parameters:
           - BucketName
+      - Label:
+          default: "SNS Configuration"
+        Parameters:
           - EmailAddress          
       - Label:
           default: "IAM Configuration"
@@ -30,10 +33,12 @@ Metadata:
           - IAMNAAEC2Role
           - IAMNAAExecRole
       - Label:
-          default: "NAA Script"
+          default: "Network Access Analzyer Script Parameters"
         Parameters:
           - Parallelism
           - Regions
+          - ScopeNameValue
+          - ExclusionsFile
 
 Parameters:
   VpcId:
@@ -55,7 +60,7 @@ Parameters:
     Description: "Specify the instance size to use"
   BucketName:
     Type: String
-    Description: Specify the Bucket Name for the NAA output and exception file download (Account ID and Region will be appended)
+    Description: Specify the Bucket Name for the NAA output and exception file download (Account ID and Region will be appended e.g. naa-<AccountID>-<region>)
     Default: naa
   EmailAddress:
     Type: String
@@ -87,6 +92,14 @@ Parameters:
     Type: "String"
     Description: "Optional: If allowing inbound SSH, specify the permitted CIDR else leave the default 127.0.0.1"
     Default: "127.0.0.1/32"
+  ScopeNameValue:
+    Type: "String"
+    Description: "Name of Network Access Analyzer scope tag which is assigned during deployment"
+    Default: "naa-external-ingress"
+  ExclusionsFile:
+    Type: "String"
+    Description: "Name of the exclusions file which is used to exclude findings from CSV output"
+    Default: "naa-exclusions.csv"
 
 Mappings: 
   PartitionMap: 
@@ -470,9 +483,9 @@ Resources:
             SCRIPT_EXECUTION_MODE="CREATE_ANALYZE"
             #SCRIPT_EXECUTION_MODE="DELETE"
 
-            SCOPE_NAME_VALUE="naa-external-ingress"
+            SCOPE_NAME_VALUE="${ScopeNameValue}"
 
-            EXCLUSIONS_FILE="naa-exclusions.csv"
+            EXCLUSIONS_FILE="${ExclusionsFile}"
 
             SCOPE_FILE="naa-scope.json"
 
