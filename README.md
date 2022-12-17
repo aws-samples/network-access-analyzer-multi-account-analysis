@@ -73,7 +73,7 @@ Large scale deployment and automation are achieved through the use of bash scrip
 
 - naa-resources.yaml:  
     A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The NAAExecRole IAM Role is dependent on this template being deployed first.  
-    >Note: If this stack is deleted and redeployed, the naa-execrole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
+    >Note: If this stack is deleted and redeployed, the naa-execrole Org StackSet and Management Stack will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
 
 - naa-execrole.yaml:  
     A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
