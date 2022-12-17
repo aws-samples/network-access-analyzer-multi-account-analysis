@@ -21,8 +21,6 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-Step by step deployment and usage is provided via the NetworkAccessAnalyzerProcedure.md document.
-
 # Limitations
 
 Network Access Analyzer analyzes resources within a single account.
