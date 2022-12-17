@@ -342,6 +342,8 @@ Resources:
       NotificationConfiguration:
         EventBridgeConfiguration:
           EventBridgeEnabled: true
+      VersioningConfiguration:
+        Status: Enabled
       Tags:
         - Key: "Name"
           Value: !Sub "${BucketName}-${AWS::AccountId}-${AWS::Region}"
@@ -378,11 +380,19 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: "AES256"
+      LifecycleConfiguration:
+        Rules:
+        - Id: LoggingLifeCycle
+          Status: Enabled
+          ExpirationInDays: '180'
+          NoncurrentVersionExpirationInDays: '180'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
       Tags:
         - Key: "Name"
           Value: !Sub "${BucketName}-access-logs-${AWS::AccountId}-${AWS::Region}"
