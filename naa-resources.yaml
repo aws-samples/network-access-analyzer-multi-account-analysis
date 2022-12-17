@@ -372,7 +372,7 @@ Resources:
       cfn_nag:
         rules_to_suppress:
           - id: W35
-            reason: "S3 access logging is not enable as the bucket is used once for finding download."
+            reason: "S3 access logging is not enable as this is the logging bucket"
     Properties:
       AccessControl: LogDeliveryWrite
       BucketName: !Sub "${BucketName}-accesslogs-${AWS::AccountId}-${AWS::Region}"
