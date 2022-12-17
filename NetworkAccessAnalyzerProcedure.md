@@ -96,12 +96,12 @@ Large scale deployment and automation are achieved through the use of bash scrip
 
 1. Deploy CloudFormation Templates:  
    1. In the account which will host an EC2 instance and the bash script is executed from, deploy the naa-resources.yaml template  
-   This will deploy the EC2 Instance, S3 Bucket, SNS Topic, IAM Role for use with EC2, and all dependencies the script requires to execute.  
+    This will deploy the EC2 Instance, S3 Bucket, SNS Topic, IAM Role for use with EC2, and all dependencies the script requires to execute.  
    2. In the AWS Org root or a CloudFormation delegated admin account, deploy the naa-execrole.yaml as a service-managed stackset to the entire AWS Org in a single region (IAM Roles are global across all regions).  
-   Specify the ARN of the NAAEC2Role deployed in step 1.1  
+    Specify the ARN of the NAAEC2Role deployed in step 1.1  
    3. In the AWS Org root, deploy the naa-execrole.yaml.  
-   The StackSet will not include the Management account. 
-   Specify the ARN of the NAAEC2Role deployed in step 1.1
+    The StackSet will not include the Management account. 
+    Specify the ARN of the NAAEC2Role deployed in step 1.1
 
 2. Log into the EC2 instance with SSM Connect and update the variables of the naa-script.sh file.  
    sudo -i  
