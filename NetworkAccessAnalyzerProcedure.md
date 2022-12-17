@@ -142,7 +142,7 @@ Large scale deployment and automation are achieved through the use of bash scrip
 5. Once the script completes, review the findings which have been uploaded to the S3 bucket  
     Unprocessed JSON from each account/region will be included in the zip file.
 
-# Add Exclusions
+# Exclusions
 
 1. A variable named S3_EXCLUSION_FILE can be set to true (default) or false.
    - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
@@ -154,10 +154,22 @@ Large scale deployment and automation are achieved through the use of bash scrip
    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
 
-# References:
+# References
 
 [What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
 [Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)  
+
+# Videos
+
+[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
+
+# Change Log
+
+12/12/2022: Initial publish to APG and GitHub
+12/08/2022: Manual deploy migrated to CFT Stack deploy  
+12/06/2022: Advanced exclusion filtering based on Resource ID, SG ID, SG Rule CIDR, SG Rule Port Range  
+11/16/2022: 2.0 release of script with parallel processing of accounts, error handling, and exclusion filtering based on Resource ID  
+03/16/2022: Initial 1.0 creation  
 
 # Link to APG Artifact (Authorized Access Only)
 
