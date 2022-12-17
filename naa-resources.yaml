@@ -451,7 +451,7 @@ Resources:
 
 
             #Download the python finding conversion script 
-            wget -P /usr/local/bin/naa https://raw.githubusercontent.com/aws-samples/multi-account-security-assessment-via-prowler/main/naa/naa-findings2csv.py
+            wget -P /usr/local/bin/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
 
             #Create the naa-script.sh and use CloudFormation substitution during deployment
             tee -a /usr/local/bin/naa/naa-script.sh <<EOL
