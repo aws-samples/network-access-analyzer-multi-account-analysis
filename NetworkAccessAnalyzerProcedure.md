@@ -132,9 +132,10 @@ Large scale deployment and automation are achieved through the use of bash scrip
         >Default Value: true
 
 3. Execute the script with with screen  
-    In order to avoid a timeout to session manager or the ssh session when executing the script, run screen first and then /usr/local/bin/naa/naa-script.sh  
-    If a disconnection occurs while the script is executing, screen will keep the process alive.  
-    To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
+    /usr/local/bin/naa/naa-script.sh
+    >In order to avoid a timeout to session manager or the ssh session when executing the script, run screen first and then /usr/local/bin/naa/naa-script.sh  
+    >If a disconnection occurs while the script is executing, screen will keep the process alive.  
+    >To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
 
 4. Monitor for any errors which may be related to missing permissions from the IAM execution role or binaries which need to be added to the server.
 
