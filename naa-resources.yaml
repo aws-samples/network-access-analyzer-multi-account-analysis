@@ -243,8 +243,9 @@ Resources:
             name:
             - !Ref S3Bucket
           object:
-            anything-but:
-            - !Ref ExclusionsFile
+            key:
+              anything-but:
+              - !Ref ExclusionsFile
       State: ENABLED
       Targets:
         - Arn: !Ref NAASNSTopic
