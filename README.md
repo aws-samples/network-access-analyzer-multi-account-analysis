@@ -23,7 +23,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 # Limitations
 
-Network Access Analyzer analyzes resources within a single account.
+Network Access Analyzer analyzes resources within a single account.  
 Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
 
 # Technology stack
