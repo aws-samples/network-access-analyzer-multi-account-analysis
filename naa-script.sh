@@ -1,32 +1,21 @@
-#!/bin/bash -e
+#!/bin/bash
 
-#Requirements:
-#   1) Install Dependencies on the AmazonLinux2 Instance. (AWS CLI and JQ are primary requirements)
-#       sudo yum update -y
-#       sudo yum remove -y awscli
-#       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-#       unzip awscliv2.zip
-#       sudo ./aws/install
-#       ln -s /usr/local/bin/aws /usr/local/sbin/aws
-#       sudo yum install jq -y
-#   2) IAM Role attached to the EC2 instance has to permission to assume "IAM_CROSS_ACCOUNT_ROLE"
-#   3) SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those,
-#        or leave allaccounts to detect and execute against all accounts in the AWS Org
-#   4) REGION_LIST (SPACE DELIMITED): Specify regions to execute commands in
-#   5) IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account.
-#   7) SCRIPT_EXECUTION_MODE:
-#       Specify CREATE_ANALYZE to direct the script to create NAA scopes (if they don't exist aleady) and analyze them
-#       Specify DELETE to direct the script to delete NAA scopes which have been provisioned (located by scope name tag)
-#       In order to REDEPLOY scopes, utilize delete to remove all scopes, modify the NAA JSON file, and then execute with CREATE_ANALYZE
-#   8) Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope.  This tag is used to locate the scope for analysis
-#   9) Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the json to csv conversion
-#   10) Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the exclusion_file may be located
-#   11) Configure PARALLELISM for the number of accounts to process simultaneously
-#   12) S3_EXCLUSION_FILE is set to true by default.  This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE
+#Variable Descriptions:
+#   1) SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those
+#        or leave "allaccounts" to detect and execute against all accounts in the AWS Org
+#   2) REGION_LIST (SPACE DELIMITED): Specify regions to analyze with Network Access Analyzer
+#   3) IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account execution
+#   4) SCRIPT_EXECUTION_MODE:
+#       Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
+#       Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
+#       In order to REDEPLOY scopes, utilize delete to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
+#   5) Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
+#   6) Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
+#   7) Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
+#   8) Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the EXCLUSIONS_FILE may be located.
+#   9) Configure PARALLELISM for the number of accounts to process simultaneously
+#   10) Configure S3_EXCLUSION_FILE is set to true by default. This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE
 #       and overwrites the local copy on EC2 upon script execution. Set to false to utilize a local exclusion file without the s3 download copy
-
-#########################################
-#Variables to be modified:
 
 SPECIFIC_ACCOUNTID_LIST="allaccounts"
 #SPECIFIC_ACCOUNTID_LIST="123456789012 210987654321"
@@ -37,7 +26,6 @@ REGION_LIST="us-east-1"
 IAM_CROSS_ACCOUNT_ROLE="NAAExecRole"
 
 SCRIPT_EXECUTION_MODE="CREATE_ANALYZE"
-#SCRIPT_EXECUTION_MODE="DELETE"
 
 SCOPE_NAME_VALUE="naa-external-ingress"
 
@@ -45,13 +33,11 @@ EXCLUSIONS_FILE="naa-exclusions.csv"
 
 SCOPE_FILE="naa-scope.json"
 
-S3_BUCKET="SpecifyS3BucketCreatedForReports"
+S3_BUCKET="naa-859254877060-us-east-1"
 
 PARALLELISM="10"
 
-S3_EXCLUSION_FILE=true
-#S3_EXCLUSION_FILE=false
-
+S3_EXCLUSION_FILE="true"
 #########################################
 
 #Continue with rest of script if an error is encountered
@@ -81,13 +67,30 @@ cat << EOF > $SCOPE_FILE
 }
 EOF
 
-#Copy EXCLUSIONS_FILE from S3 to the local EC2 if enabled.  Allows for exclusion file update within bucket and auto-copy to EC2
-if $S3_EXCLUSION_FILE; then 
+#Copy EXCLUSIONS_FILE from S3 to the local EC2 if enabled.  Allows for exclusion file update within bucket and copied to EC2 upon script execution
+if [[ "$S3_EXCLUSION_FILE" == "true" ]]; then
+    #Copy exclusion file from S3 bucket to EC2
     aws s3 cp s3://$S3_BUCKET/$EXCLUSIONS_FILE .
+    #If an error occurs with the copy (most likely to initial execution and doens't yet exist), create a local exclusion file and copy to the S3 bucket
     if [ $? = 1 ]; then
-        echo "There was an error copying the exclusion file from path s3://$S3_BUCKET/$EXCLUSIONS_FILE"
+        echo "There was an error copying the exclusion file s3://$S3_BUCKET/$EXCLUSIONS_FILE"
         echo ""
-        echo "A local $EXCLUSIONS_FILE will be created if one does not exist already.  This file may be used as a template or copied to $S3_BUCKET"
+        echo "A local $EXCLUSIONS_FILE will be created if it doesn't exist and copied to $S3_BUCKET"
+        if [ ! -f $EXCLUSIONS_FILE ]; then
+          echo "Local exclusions file file not found.  Creating..."
+          echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
+        fi
+        aws s3 cp $EXCLUSIONS_FILE s3://$S3_BUCKET/$EXCLUSIONS_FILE
+        if [ $? = 1 ]; then
+          echo "There was an error copying the exclusion file $EXCLUSIONS_FILE to the S3 Bucket $S3_BUCKET"
+          echo "Review IAM and/or S3 bucket permissions"
+        fi
+    fi
+elif [[ "$S3_EXCLUSION_FILE" == "false" ]]; then
+    #Create local exclusions file if it doesn't exist
+    if [ ! -f $EXCLUSIONS_FILE ]; then
+        echo "Local exclusions file file not found.  Creating..."
+        echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
     fi
 fi
 
