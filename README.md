@@ -1,3 +1,5 @@
+# Network Access Analyzer Multi-Account Analysis
+
 # Summary
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
@@ -6,7 +8,7 @@ This solution has been built to extend the functionality of organization-wide an
 
 # Overview
 
-Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
+**Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.**
 
 Resources are provisioned via CloudFormation templates with tunable parameters at the time of deployment, as well as through the naa-script.sh script.
 
@@ -21,6 +23,33 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 Step by step deployment and usage is provided via the NetworkAccessAnalyzerProcedure.md document.
 
+# Limitations
+
+Network Access Analyzer analyzes resources within a single account.
+Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
+
+# Technology stack
+
+VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Python
+
+# Solution Architecture
+
+The architecture of this solution uses to assess environments is comprised of a few key components.
+
+An IAM Role (NAAEC2Role) is provisioned in an account where the EC2 based NAA analysis instance will be provisioned
+
+An EC2 instance is provisioned, the NAAEC2Role attached, and the EC2 instance prepared with all dependencies via EC2 UserData
+
+An IAM Role is (NAAExecRole) is provisioned in the Org root account, as well as all member accounts which allow for cross-account assume by the NAAEC2Role
+
+A Network Access Analyzer scope is deployed in each member account and is analyzed via bash script automation
+
+All findings are consolidated on the EC2 instance, processed, and uploaded to a S3 bucket which is created during the initial solution deployment.
+
+# Automation and scale
+
+Large scale deployment and automation are achieved through the use of bash scripting.  The CLI capabilities of Network Access Analyzer are leveraged.
+
 # Example Output (Sanitized)
 
 **AWS Account list generation**  
@@ -33,19 +62,20 @@ Step by step deployment and usage is provided via the NetworkAccessAnalyzerProce
 ![ReportExample01](docs/images/ReportExample01.png)
 ![ReportExample02](docs/images/ReportExample02.png)
 
-# Files
+# **Related Resources**
 
 - NetworkAccessAnalyzerProcedure.md:  
     Step by step instructions for provisioning IAM Roles, EC2 Instance, and usage.
 
 - naa-script.sh:  
-    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole” in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution. 
+    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution. 
     >Note: This script has tunable variables within the script itself (See appendix for more details). This script is provided independently from the CFT for reference.
 
 - naa-resources.yaml:  
-    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The IAM-NAAExecRole is dependent on this template being deployed first.  Note: If this stack is deleted and redeployed, the NAArExecRole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
+    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The NAAExecRole IAM Role is dependent on this template being deployed first.  
+    >Note: If this stack is deleted and redeployed, the naa-execrole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
 
-- IAM-NAAExecRole.yaml:  
+- naa-execrole.yaml:  
     A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
 
 - naa-exclusions.csv:  
@@ -58,10 +88,14 @@ Step by step deployment and usage is provided via the NetworkAccessAnalyzerProce
 - naa-findings2csv.py:  
     Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
 
-# References:
+# References
 
 [What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
 [Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)
+
+# Videos
+
+[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
 # Link to APG Artifact (Authorized Access Only)
 

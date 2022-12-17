@@ -1,4 +1,14 @@
-# Summary
+# Network Access Analyzer Multi-Account Analysis
+
+# Table of Contents
+
+**1. [Summary](#Summary)**
+
+**2. [Prerequisites](#Prerequisites)**
+
+**3. [Implementation Procedure](#ImplementationProcedure)**
+
+# **Summary** <a name="Summary"></a>
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
@@ -19,7 +29,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-# Prerequisites 
+# **Prerequisites** <a name="Prerequisites"></a>
 
 - The default behavior of the naa-script.sh script is to leverage the IAM Role attached to the EC2 Role in order to assume an IAM Role in the ORG root account and generate a list of all member accounts in the AWS Org.  This behavior requires AWS Organizations to be provisioned and the member accounts associated with the AWS Organization.
 
@@ -27,119 +37,103 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-# Limitations
+# **Implementation Procedure** <a name="ImplemementationProcedure"></a>
 
-Network Access Analyzer analyzes resources within a single account.
-Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
+1. Select an account where the Network Access Analyzer EC2 instance will be provisioned.  Log into this account and deploy the Network Access Analyzer CloudFormation template. (naa-resources.yaml)  
+    >Note: Use an account such as Security or CommonServices for the Network Access Analyzer EC2 deploy. When deploying the CFT template, it will provision an IAM Role, S3 Bucket with policy, SNS Topic, and EC2 instance which will be used by the Network Access Analyzer script.
 
-# Target technology stack  
+    **Deploy the naa-resources.yaml CFT template:**
+    1. Open the CloudFormation console
+    2. Create Stack -\> With new resources
+    3. Prerequisite - Prepare template: "Template is ready"
+    4. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template
+        1. Specify the naa-resources.yaml template
+    5. Next
+    6. Specify stack details
+        1. StackSet name: NAA-Resources
+        2. Parameters:
+            1. VPCId: Select a VPC in the account
+            2. SubnetId: Select a private subnet which has Internet access
+            Note: If a public subnet is selected, the EC2 instance will not provision as the CFT doesn't attach an EIP by default
+            3. InstanceType: Leave the default Instance type and size unless it's not present in the AWS Partition being deployed to
+            4. InstanceImageId: Leave the default for Amazon Linux 2
+            5. KeyPairName: Specify the name of an existing KeyPair if using SSH for access (This is optional and can be left blank)
+            7. PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
+            8. BucketName: Leave the default unless necessary
+            9. EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
+            >Note: The SNS subscription configuration must be confirmed prior to Network Access Analyzer completing the analysis or a notification will not be sent.
+            10. NAAEC2Role: Leave the default unless necessary
+            11. NAAExecRole: Leave the default unless necessary
+            12. Parallelism: Specify the number of parallel assessments to perform.
+            13. Regions: Specify regions to analyze with Network Access Analyzer
+            14. ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
+            15. ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
+            13. Next
+            14. Next
+            15. Review the summary
+            16. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
+            17. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
-VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Python
+2. Log into the AWS Org management account (root) in order to deploy a CloudFormation StackSet across the AWS Organization and a Stack to the management account.  
+Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions." This can be safely enabled (with the appropriate approval) without impacting existing stacks and can also be disabled at a later time via command line.
 
-# Target architecture 
+    **Deploy the naa-execrole.yaml CFT template to all accounts in the Organization via a StackSet:**
+    1. Open the CloudFormation console
+    2. Click StackSets
+    3. Click "Create StackSet"
+    4. Prerequisite - Prepare template: "Template is ready"
+    5. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template.
+            1. Specify the naa-execrole.yaml template.
+    6. Next
+    7. Specify StackSet details
+            1. StackSet name: NAA-ExecRole
+            2. Parameters:
+                1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the naa-resources.yaml stack.
+                2. NAARoleName: Leave the default (NAAExecRole)
+    8. Permissions: Service-managed permissions
+    9. Deployment targets: Leave "Deploy to organization" selected along with defaults
+    10. Specify regions: Select a single region as IAM is global. (E.g., Use the region the Network Access Analyzer EC2 Instance will be deployed in)
+    11. OPTIONAL: Specify Deployment Options: Set BOTH "Maximum concurrent accounts" and "Failure tolerance" to a high number (E.g. 100) to have the stacks deploy to this number of AWS accounts simultaneously.
+    12. Next
+    13. Review the summary
+    14. Check the box to approve "I acknowledge that AWS CloudFormation might create IAM resources with custom names."
+    15. Submit
+    >Monitor the "Stack instances" (Individual account status) and Operations (Overall) tabs to determine when the deploy is completed.
 
-The architecture of this solution uses to assess environments is comprised of a few key components.
+    **Deploy the naa-execrole.yaml CFT template to the AWS Org management account (root) via a stack:**
+    >Note: This deployment is direct to the management account as the StackSet deployed previously does not include the management account.
+    1. Open the CloudFormation console
+    2. Create Stack -\> With new resources
+    3. Prerequisite - Prepare template: "Template is ready"
+    4. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template
+        1. Specify the naa-execrole.yaml template
+    5. Next
+    6. Specify stack details
+        1. Stack name: NAA-ExecRole
+        2. Parameters:
+            1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the NAA-Resources stack.
+            2. NAARoleName: Leave the default (NAAExecRole)
+    7. Next
+    8. Next
+    9. Review the summary
+    10. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
 
-An IAM Role (NAAEC2Role) is provisioned in an account where the EC2 based NAA analysis instance will be provisioned
+3. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAAEC2 Instance.
+>Note: SSM Access is granted as part of the IAM Role which is provisioned and attached to the EC2 instance. If unable to connect, validate the subnet has Internet access and reboot the instance as the agent needs to communicate with the AWS SSM endpoint.
+![InstanceConnect](docs/images/InstanceConnect.png)
 
-An EC2 instance is provisioned, the NAAEC2Role attached, and the EC2 instance prepared with all dependencies via EC2 UserData
+4. Review the naa-script.sh script to validate settings and then execute to begin the analysis
+>Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
+    1. sudo -i
+    2. screen
+    3. cd /usr/local/bin/naa
+    4. vi naa-script.sh and review the variables at top portion of the script.  If correct, save and exit (:q! (quit) or :wq! (save and quit)  
+    5. ./naa-script.sh
 
-An IAM Role is (NAAExecRole) is provisioned in the Org root account, as well as all member accounts which allow for cross-account assume by the NAAEC2Role
+5. Monitor for any errors to make sure execution is working properly.
+>Note: The first time the script is executed, it will setup the naa-exclusions.csv file.  It will generate an error about not being able to download the file from the S3 bucket which is expected.  Subsequent executions, will not display an error.
 
-NAA Scopes are deployed in each member account and analyzed via bash script automation
-
-All findings are consolidated on the EC2 instance, processed, and uploaded to a S3 bucket which is created during the initial solution deployment.
-
-# Automation and scale
-
-Large scale deployment and automation are achieved through the use of bash scripting.  The CLI capabilities of Network Access Analyzer are leveraged.
-
-# Example Output (Sanitized)
-
-**AWS Account list generation**  
-![AWS Account list generation](docs/images/AWSAccountInventory.png)
-
-**AWS Account Analysis**  
-![AWS Account Analysis](docs/images/AWSAccountAnalysis.png)
-
-**Report Example (Split into two halves)**  
-![ReportExample01](docs/images/ReportExample01.png)
-![ReportExample02](docs/images/ReportExample02.png)
-
-# Files
-
-- NetworkAccessAnalyzerProcedure.md:  
-    Step by step instructions for provisioning IAM Roles, EC2 Instance, and usage.
-
-- naa-script.sh:  
-    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution. 
-    >Note: This script has tunable variables within the script itself (See appendix for more details). This script is provided independently from the CFT for reference.
-
-- naa-resources.yaml:  
-    A CFT which is deployed in the account where the NAA EC2 instance will be deployed.  This template will deploy all necessary dependencies in order for the bash script to perform deployment, analysis, and export with Network Access Analyzer.  The NAAExecRole IAM Role is dependent on this template being deployed first.  
-    >Note: If this stack is deleted and redeployed, the naa-execrole StackSet will need to be re-deployed to rebuild the cross-account dependency between IAM Roles.
-
-- naa-execrole.yaml:  
-    A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
-
-- naa-exclusions.csv:  
-    CSV formatted file which allows known good findings to be excluded from future analysis finding output. Findings are pattern matched and must be exact.  
-
-    Format:  
-    resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
-    eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80  
-
-- naa-findings2csv.py:  
-    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
-
-# Deployment
-
-1. Deploy CloudFormation Templates:  
-   1. In the account which will host an EC2 instance and the bash script is executed from, deploy the naa-resources.yaml template  
-    This will deploy the EC2 Instance, S3 Bucket, SNS Topic, IAM Role for use with EC2, and all dependencies the script requires to execute.  
-   2. In the AWS Org root or a CloudFormation delegated admin account, deploy the naa-execrole.yaml as a service-managed stackset to the entire AWS Org in a single region (IAM Roles are global across all regions).  
-    Specify the ARN of the NAAEC2Role deployed in step 1.1  
-   3. In the AWS Org root, deploy the naa-execrole.yaml.  
-    The StackSet will not include the Management account. 
-    Specify the ARN of the NAAEC2Role deployed in step 1.1
-
-2. Log into the EC2 instance with SSM Connect and update the variables of the naa-script.sh file.  
-   sudo -i  
-   Use vi /usr/local/naa/naa-script.sh and review the top portion of the script  
-    - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
-        >Default Value: allaccounts
-    - REGION_LIST (SPACE DELIMITED): Specify regions to analyze with Network Access Analyzer
-        >Default Value: us-east-1 - Initially set via CFT parameter
-    - IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account execution
-        >Default Value: NAAExecRole - Initially set via CFT parameter
-    - SCRIPT_EXECUTION_MODE:
-        >Default Value: CREATE_ANALYZE
-        - Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
-        - Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
-        - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
-    - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
-        >Default Value: naa-external-ingress - Initially set via CFT parameter
-    - Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
-        >Default Value: naa-exclusions.csv - Initially set via CFT parameter
-    - Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
-        >Default Value: naa-scope.json
-    - Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the EXCLUSIONS_FILE may be located.
-        >Default Value: Configured during deployment to utilize the S3 bucket provisioned by the CFT.
-    - Configure PARALLELISM for the number of accounts to process simultaneously
-        >Default Value: 10 - Initially set via CFT parameter
-    - Configure S3_EXCLUSION_FILE is set to true by default.  This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE and overwrites the local copy on EC2 upon script execution.  
-        Set to false to utilize a local exclusion file without the S3 download copy
-        >Default Value: true
-
-3. Execute the script with with screen  
-    /usr/local/bin/naa/naa-script.sh
-    >In order to avoid a timeout to session manager or the ssh session when executing the script, run screen first and then /usr/local/bin/naa/naa-script.sh  
-    >If a disconnection occurs while the script is executing, screen will keep the process alive.  
-    >To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
-
-4. Monitor for any errors which may be related to missing permissions from the IAM execution role or binaries which need to be added to the server.
-
-5. Once the script completes, review the findings which have been uploaded to the S3 bucket  
+6. Once the script completes, review the findings which have been uploaded to the S3 bucket  
     Unprocessed JSON from each account/region will be included in the zip file.
 
 # Exclusions
@@ -153,24 +147,3 @@ Large scale deployment and automation are achieved through the use of bash scrip
     - IF S3_EXCLUSION_FILE is true, edit the EXCLUSIONS_FILE in the S3 bucket and if false, edit the local EC2 EXCLUSIONS_FILE  
    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
-
-# References
-
-[What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
-[Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)  
-
-# Videos
-
-[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
-
-# Change Log
-
-12/12/2022: Initial publish to APG and GitHub
-12/08/2022: Manual deploy migrated to CFT Stack deploy  
-12/06/2022: Advanced exclusion filtering based on Resource ID, SG ID, SG Rule CIDR, SG Rule Port Range  
-11/16/2022: 2.0 release of script with parallel processing of accounts, error handling, and exclusion filtering based on Resource ID  
-03/16/2022: Initial 1.0 creation  
-
-# Link to APG Artifact (Authorized Access Only)
-
-https://apg-library.amazonaws.com/content/111111111111111111111fix
