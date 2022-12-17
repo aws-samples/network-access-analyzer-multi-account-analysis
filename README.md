@@ -79,7 +79,8 @@ Large scale deployment and automation are achieved through the use of bash scrip
     A CFT to be deployed via StackSet across all member accounts (including the AWS Org Root/Management account). This will create an IAM Role which can be assumed by the NAA script during processing.
 
 - naa-exclusions.csv:  
-    CSV formatted file which allows known good findings to be excluded from future analysis finding output. Findings are pattern matched and must be exact.  
+    >Note: This file will be created automatically during the initial script execution.
+    The CSV formatted file which allows known good findings to be excluded from future analysis finding output. Findings are pattern matched and must be exact.  
 
     Format:  
     resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
