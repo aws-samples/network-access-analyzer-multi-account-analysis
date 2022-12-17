@@ -143,17 +143,15 @@ Large scale deployment and automation are achieved through the use of bash scrip
 
 # Add Exclusions
 
-1. A variable named S3_EXCLUSION_FILE is set to true by default.  This will instruct the script to attempt a retrieve of the exclusion file EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET (automatically set to the S3 bucket which was provisioned during the CFT deploy).  
-   - If a failure is generated, errors will be displayed and a local default local file will be created if it doesn't exist already.  
-   - The EXCLUSIONS_FILE which is present locally on the EC2 WILL BE OVERWRITTEN with the file located in the S3_BUCKET.  
-   - If you are leaving the variable S3_EXCLUSIONS_FILE to true, make sure to place the EXCLUSION_FILE within the S3 bucket.
-   - If the variable S3_EXCLUSIONS_FILE is set to false, the script will NOT attempt to retreive the file from S3 and will use the local file only.
-   
-2. Edit this file and specify details about findings (one per line) to the file to exclude them from the NAA finding output  
+1. A variable named S3_EXCLUSION_FILE can be set to true (default) or false.
+   - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
+        - If a failure is generated, errors will be displayed, a local default local file will be created if it doesn't exist already, and then it will be uploaded to the S3 bucket.  
+        - During script executions, the EXCLUSIONS_FILE which is present locally on the EC2 WILL BE OVERWRITTEN with the file located in the S3_BUCKET.  
+   - If false, the script will generate a local EXCLUSIONS_FILE if it doesn't exist  
+2. Edit this file and specify details about findings (one per line) to the file to exclude them from the NAA finding output
+    - IF S3_EXCLUSION_FILE is true, edit the EXCLUSIONS_FILE in the S3 bucket and if false, edit the local EC2 EXCLUSIONS_FILE  
    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
-
-3. Upload the modified exclusion file to the S3 bucket OR set S3_EXCLUSION_FILE to false and utilize the local exclusion file
 
 # References:
 
