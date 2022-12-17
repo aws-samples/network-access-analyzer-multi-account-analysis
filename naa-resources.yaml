@@ -195,7 +195,7 @@ Resources:
       cfn_nag:
         rules_to_suppress:
           - id: W47
-            reason: "The SNS Topic is used to send a notification when the NAA Assessment is completed and an object is uploaded to S3"
+            reason: "The SNS Topic is used to send a notification when the NAA analysis is completed and objects are uploaded to S3"
     Properties:
       TopicName: NAANotifications
 
@@ -526,7 +526,7 @@ Resources:
 
             #Copy EXCLUSIONS_FILE from S3 to the local EC2 if enabled.  Allows for exclusion file update within bucket and copied to EC2 upon script execution
             if [[ "\$S3_EXCLUSION_FILE" == "true" ]]; then
-                #Copy exclusion file from S3 bucket to EC2
+                echo "Copy exclusion file s3://\$S3_BUCKET/\$EXCLUSIONS_FILE to /usr/local/bin/naa"
                 aws s3 cp s3://\$S3_BUCKET/\$EXCLUSIONS_FILE .
                 #If an error occurs with the copy (most likely to initial execution and doens't yet exist), create a local exclusion file and copy to the S3 bucket
                 if [ \$? = 1 ]; then
@@ -537,6 +537,7 @@ Resources:
                       echo "Local exclusions file file not found.  Creating..."
                       echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > \$EXCLUSIONS_FILE
                     fi
+                    echo "Copy exclusion file /usr/local/bin/naa/\$EXCLUSIONS_FILE to s3://\$S3_BUCKET"
                     aws s3 cp \$EXCLUSIONS_FILE s3://\$S3_BUCKET/\$EXCLUSIONS_FILE
                     if [ \$? = 1 ]; then
                       echo "There was an error copying the exclusion file \$EXCLUSIONS_FILE to the S3 Bucket \$S3_BUCKET"
