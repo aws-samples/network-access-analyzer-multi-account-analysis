@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 #Variable Descriptions:
 #   1) SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those
@@ -39,9 +39,6 @@ PARALLELISM="10"
 
 S3_EXCLUSION_FILE="true"
 #########################################
-
-#Continue with rest of script if an error is encountered
-set +e
 
 #Create the network access analyzer scope JSON file
 cat << EOF > $SCOPE_FILE
