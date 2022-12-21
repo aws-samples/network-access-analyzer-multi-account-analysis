@@ -1,4 +1,4 @@
-#!/bin/bash +e
+#!/bin/bash
 
 #Variable Descriptions:
 #   1) SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those
