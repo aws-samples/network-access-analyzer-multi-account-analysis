@@ -39,6 +39,8 @@ Metadata:
           - Regions
           - ScopeNameValue
           - ExclusionsFile
+          - ScheduledAnalysis
+          - CronScheduleExpression
 
 Parameters:
   VpcId:
@@ -100,6 +102,17 @@ Parameters:
     Type: "String"
     Description: "Name of the exclusions file which is used to exclude findings from CSV output"
     Default: "naa-exclusions.csv"
+  ScheduledAnalysis:
+    Type: "String"
+    Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)"
+    Default: "true"
+    AllowedValues:
+      - true
+      - false
+  CronScheduleExpression:
+    Type: "String"
+    Description: "Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)"
+    Default: "0 0 * * 0"
 
 Mappings: 
   PartitionMap: 
@@ -449,7 +462,6 @@ Resources:
 
             mkdir /usr/local/bin/naa
 
-
             #Download the python finding conversion script 
             wget -P /usr/local/bin/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
 
@@ -774,6 +786,11 @@ Resources:
             
             chmod +x /usr/local/bin/naa/naa-script.sh
 
+            #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
+            if [[ "${ScheduledAnalysis}" == "true" ]]; then
+              echo "${CronScheduleExpression} root /usr/local/bin/naa/naa-script.sh" > /etc/cron.d/naa-schedule
+            fi
+            
       Tags:
         - Key: "Name"
           Value: "naaec2"
