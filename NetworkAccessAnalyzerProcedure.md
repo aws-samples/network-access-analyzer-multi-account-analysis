@@ -70,11 +70,13 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
             13. Regions: Specify regions to analyze with Network Access Analyzer
             14. ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
             15. ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
-            13. Next
-            14. Next
-            15. Review the summary
-            16. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
-            17. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
+            16. ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
+            17. CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
+            18. Next
+            19. Next
+            20. Review the summary
+            21. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
+            22. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
 2. Log into the AWS Org management account (root) in order to deploy a CloudFormation StackSet across the AWS Organization and a Stack to the management account.  
 Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions." This can be safely enabled (with the appropriate approval) without impacting existing stacks and can also be disabled at a later time via command line.

@@ -44,6 +44,8 @@ A Network Access Analyzer scope is deployed in each member account and is analyz
 
 All findings are consolidated on the EC2 instance, processed, and uploaded to a S3 bucket which is created during the initial solution deployment.
 
+Optionally, cron can be configured to automatically execute the /usr/local/bin/naa/naa-script.sh on a schedule.
+
 # Automation and scale
 
 Large scale deployment and automation are achieved through the use of bash scripting.  The CLI capabilities of Network Access Analyzer are leveraged.
