@@ -104,7 +104,7 @@ Parameters:
     Default: "naa-exclusions.csv"
   ScheduledAnalysis:
     Type: "String"
-    Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)"
+    Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must be manually deleted to remove the cron schedule)"
     Default: "true"
     AllowedValues:
       - true
