@@ -1,16 +1,15 @@
 # Network Access Analyzer Multi-Account Analysis
 
-# Table of Contents
+## Table of Contents
 
-**1. [Summary](#Summary)**
+1. [Summary](#summary)
+2. [Overview](#overview)
+3. [Prerequisites](#prerequisites)
+4. [Implementation Procedure](#implementation-procedure)
+5. [Exclusions](#exclusions)
+6. [Appendix](#appendix)
 
-**2. [Prerequisites](#Prerequisites)**
-
-**3. [Implementation Procedure](#ImplementationProcedure)**
-
-**4. [Appendix](#Appendix)**
-
-# **Summary** <a name="Summary"></a>
+## Summary
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
@@ -19,7 +18,7 @@ This solution has been built to extend the functionality of organization-wide an
 The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
 The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
 
-# Overview
+## Overview
 
 Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
 
@@ -31,7 +30,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-# **Prerequisites** <a name="Prerequisites"></a>
+## Prerequisites
 
 - The default behavior of the naa-script.sh script is to leverage the IAM Role attached to the EC2 Role in order to assume an IAM Role in the ORG root account and generate a list of all member accounts in the AWS Org.  This behavior requires AWS Organizations to be provisioned and the member accounts associated with the AWS Organization.
 
@@ -39,7 +38,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-# **Implementation Procedure** <a name="ImplemementationProcedure"></a>
+## Implementation Procedure
 
 1. Deploy the EC2 instance and supporting resources (naa-resources.yaml)  
     >Note: When deploying the CFT template, it will provision an IAM Role, S3 Bucket with policy, SNS Topic, and EC2 instance which will be used by the Network Access Analyzer script.
@@ -59,23 +58,23 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
             3. InstanceType: Leave the default Instance type and size unless it's not present in the AWS Partition being deployed to
             4. InstanceImageId: Leave the default for Amazon Linux 2
             5. KeyPairName: Specify the name of an existing KeyPair if using SSH for access (This is optional and can be left blank)
-            7. PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
-            8. BucketName: Leave the default unless necessary
-            9. EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
+            6. PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
+            7. BucketName: Leave the default unless necessary
+            8. EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
                 >Note: The SNS subscription configuration must be confirmed prior to Network Access Analyzer completing the analysis or a notification will not be sent.
-            10. NAAEC2Role: Leave the default unless necessary
-            11. NAAExecRole: Leave the default unless necessary
-            12. Parallelism: Specify the number of parallel assessments to perform.
-            13. Regions: Specify regions to analyze with Network Access Analyzer
-            14. ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
-            15. ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
-            16. ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
-            17. CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
+            9. NAAEC2Role: Leave the default unless necessary
+            10. NAAExecRole: Leave the default unless necessary
+            11. Parallelism: Specify the number of parallel assessments to perform.
+            12. Regions: Specify regions to analyze with Network Access Analyzer
+            13. ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
+            14. ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
+            15. ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
+            16. CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
+            17. Next
             18. Next
-            19. Next
-            20. Review the summary
-            21. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
-            22. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
+            19. Review the summary
+            20. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
+            21. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
 2. Deploy the IAM cross account role to all AWS organization member accounts (naa-execrole.yaml)  
     >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions."
@@ -140,7 +139,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 8. OPTIONAL: If during deployment, the Cloudformation paramater "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist.  This cron entry will automatically execute the naa-script.sh based on the schedule set.  If the schedule needs to be adjusted, the "/etc/cron.d/naa-schedule" file can be manually tuned.
 
-# Exclusions
+## Exclusions
 
 1. A variable named S3_EXCLUSION_FILE can be set to true (default) or false.
    - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
@@ -152,9 +151,9 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
 
-# **Appendix** <a name="Appendix"></a>
+## Appendix
 
-**Script Variables**
+### Script Variables
 
 - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
     >Default Value: allaccounts
@@ -164,9 +163,9 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     >Default Value: NAAExecRole - Initially set via CFT parameter
 - SCRIPT_EXECUTION_MODE:
     >Default Value: CREATE_ANALYZE
-    - Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
-    - Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
-    - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
+  - Specify CREATE_ANALYZE to direct the script to create Network Access Analyzer scopes (if they don't exist already) and analyze them
+  - Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
+  - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
 - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
     >Default Value: naa-external-ingress - Initially set via CFT parameter
 - Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
