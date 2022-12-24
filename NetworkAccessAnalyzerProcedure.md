@@ -77,7 +77,8 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     12. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
 2. Deploy the IAM cross account role to all AWS organization member accounts (naa-execrole.yaml)  
-    >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions."
+    >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. 
+    > > This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions."
    1. Open the CloudFormation console
    2. Click StackSets
    3. Click "Create StackSet"
