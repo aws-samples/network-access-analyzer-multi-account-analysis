@@ -102,7 +102,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
    13. Review the summary
    14. Check the box to approve "I acknowledge that AWS CloudFormation might create IAM resources with custom names."
    15. Submit
-    >Monitor the "Stack instances" (Individual account status) and Operations (Overall) tabs to determine when the deploy is completed.
+    >Note: Monitor the "Stack instances" (Individual account status) and Operations (Overall) tabs to determine when the deploy is completed.
 
     **Deploy the naa-execrole.yaml CFT template to the AWS Org management account (root) via a stack:**
     >Note: This deployment is direct to the management account as the StackSet deployed previously does not include the management account.
@@ -123,8 +123,9 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     10. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
 
 3. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAAEC2 Instance.
->Note: SSM Access is granted as part of the IAM Role which is provisioned and attached to the EC2 instance. If unable to connect, validate the subnet has Internet access and reboot the instance as the agent needs to communicate with the AWS SSM endpoint.
-![InstanceConnect](docs/images/InstanceConnect.png)
+    >Note: SSM Access is granted as part of the IAM Role which is provisioned and attached to the EC2 instance. If unable to connect, validate the subnet has Internet access and reboot the instance as the agent needs to communicate with the AWS SSM endpoint.
+
+    ![InstanceConnect](docs/images/InstanceConnect.png)
 
 4. Review the naa-script.sh script to validate settings and then execute to begin the analysis
     >Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
