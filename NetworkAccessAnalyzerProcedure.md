@@ -47,34 +47,34 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     3. Create Stack -\> With new resources
     4. Prerequisite - Prepare template: "Template is ready"
     5. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template
-        1. Specify the naa-resources.yaml template
+        - Specify the naa-resources.yaml template
     6. Next
     7. Specify stack details
-        1. StackSet name: NAA-Resources
-        2. Parameters:
-            1. VPCId: Select a VPC in the account
-            2. SubnetId: Select a private subnet which has Internet access
-            Note: If a public subnet is selected, the EC2 instance will not provision as the CFT doesn't attach an EIP by default
-            3. InstanceType: Leave the default Instance type and size unless it's not present in the AWS Partition being deployed to
-            4. InstanceImageId: Leave the default for Amazon Linux 2
-            5. KeyPairName: Specify the name of an existing KeyPair if using SSH for access (This is optional and can be left blank)
-            6. PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
-            7. BucketName: Leave the default unless necessary
-            8. EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
+        - StackSet name: NAA-Resources
+        - Parameters:
+            - VPCId: Select a VPC in the account
+            - SubnetId: Select a private subnet which has Internet access
+                >Note: If a public subnet is selected, the EC2 instance will not provision as the CFT doesn't attach an EIP by default
+            - InstanceType: Leave the default Instance type and size unless it's not present in the AWS Partition being deployed to
+            - InstanceImageId: Leave the default for Amazon Linux 2
+            - KeyPairName: Specify the name of an existing KeyPair if using SSH for access (This is optional and can be left blank)
+            - PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
+            - BucketName: Leave the default unless necessary
+            - EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
                 >Note: The SNS subscription configuration must be confirmed prior to Network Access Analyzer completing the analysis or a notification will not be sent.
-            9. NAAEC2Role: Leave the default unless necessary
-            10. NAAExecRole: Leave the default unless necessary
-            11. Parallelism: Specify the number of parallel assessments to perform.
-            12. Regions: Specify regions to analyze with Network Access Analyzer
-            13. ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
-            14. ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
-            15. ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
-            16. CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
-            17. Next
-            18. Next
-            19. Review the summary
-            20. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
-            21. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
+            - NAAEC2Role: Leave the default unless necessary
+            - NAAExecRole: Leave the default unless necessary
+            - Parallelism: Specify the number of parallel assessments to perform.
+            - Regions: Specify regions to analyze with Network Access Analyzer
+            - ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
+            - ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
+            - ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
+            - CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
+    8. Next
+    9. Next
+    10. Review the summary
+    11. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
+    12. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
 2. Deploy the IAM cross account role to all AWS organization member accounts (naa-execrole.yaml)  
     >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions."
@@ -83,13 +83,13 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
    3. Click "Create StackSet"
    4. Prerequisite - Prepare template: "Template is ready"
    5. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template.
-       1. Specify the naa-execrole.yaml template.
+       - Specify the naa-execrole.yaml template.
    6. Next
    7. Specify StackSet details
-        1. StackSet name: NAA-ExecRole
-        2. Parameters:
-            1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the naa-resources.yaml stack.
-            2. NAARoleName: Leave the default (NAAExecRole)
+        - StackSet name: NAA-ExecRole
+        - Parameters:
+            - AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the naa-resources.yaml stack.
+            - NAARoleName: Leave the default (NAAExecRole)
    8. Permissions: Service-managed permissions
    9. Deployment targets: Leave "Deploy to organization" selected along with defaults
    10. Specify regions: Select a single region as IAM is global. (E.g., Use the region the Network Access Analyzer EC2 Instance will be deployed in)
@@ -106,13 +106,13 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     2. Create Stack -\> With new resources
     3. Prerequisite - Prepare template: "Template is ready"
     4. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template
-        1. Specify the naa-execrole.yaml template
+        - Specify the naa-execrole.yaml template
     5. Next
     6. Specify stack details
-        1. Stack name: NAA-ExecRole
-        2. Parameters:
-            1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the NAA-Resources stack.
-            2. NAARoleName: Leave the default (NAAExecRole)
+        - Stack name: NAA-ExecRole
+        - Parameters:
+            - AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the NAA-Resources stack.
+            - NAARoleName: Leave the default (NAAExecRole)
     7. Next
     8. Next
     9. Review the summary
