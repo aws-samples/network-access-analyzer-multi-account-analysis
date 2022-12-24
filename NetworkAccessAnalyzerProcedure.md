@@ -63,7 +63,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
             7. PermittedSSHInbound: If using SSH for access, specify a permitted CIDR
             8. BucketName: Leave the default unless necessary
             9. EmailAddress: Specify an email address for a SNS notification when Network Access Analyzer completes the analysis and uploads the files to S3.
-            >Note: The SNS subscription configuration must be confirmed prior to Network Access Analyzer completing the analysis or a notification will not be sent.
+                >Note: The SNS subscription configuration must be confirmed prior to Network Access Analyzer completing the analysis or a notification will not be sent.
             10. NAAEC2Role: Leave the default unless necessary
             11. NAAExecRole: Leave the default unless necessary
             12. Parallelism: Specify the number of parallel assessments to perform.
@@ -81,27 +81,27 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 2. Log into the AWS Org management account (root) in order to deploy a CloudFormation StackSet across the AWS Organization and a Stack to the management account.  
 Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions." This can be safely enabled (with the appropriate approval) without impacting existing stacks and can also be disabled at a later time via command line.
 
-    **Deploy the naa-execrole.yaml CFT template to all accounts in the Organization via a StackSet:**
-    1. Open the CloudFormation console
-    2. Click StackSets
-    3. Click "Create StackSet"
-    4. Prerequisite - Prepare template: "Template is ready"
-    5. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template.
-            1. Specify the naa-execrole.yaml template.
-    6. Next
-    7. Specify StackSet details
-            1. StackSet name: NAA-ExecRole
-            2. Parameters:
-                1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the naa-resources.yaml stack.
-                2. NAARoleName: Leave the default (NAAExecRole)
-    8. Permissions: Service-managed permissions
-    9. Deployment targets: Leave "Deploy to organization" selected along with defaults
-    10. Specify regions: Select a single region as IAM is global. (E.g., Use the region the Network Access Analyzer EC2 Instance will be deployed in)
-    11. OPTIONAL: Specify Deployment Options: Set BOTH "Maximum concurrent accounts" and "Failure tolerance" to a high number (E.g. 100) to have the stacks deploy to this number of AWS accounts simultaneously.
-    12. Next
-    13. Review the summary
-    14. Check the box to approve "I acknowledge that AWS CloudFormation might create IAM resources with custom names."
-    15. Submit
+   **Deploy the naa-execrole.yaml CFT template to all accounts in the Organization via a StackSet:**
+   1. Open the CloudFormation console
+   2. Click StackSets
+   3. Click "Create StackSet"
+   4. Prerequisite - Prepare template: "Template is ready"
+   5. Specify template: "Upload a template file" -\> "Choose File" -\> Browse for the template.
+       1. Specify the naa-execrole.yaml template.
+   6. Next
+   7. Specify StackSet details
+        1. StackSet name: NAA-ExecRole
+        2. Parameters:
+            1. AuthorizedARN: Specify the NAAEC2Role ARN which was provisioned as part of the naa-resources.yaml stack.
+            2. NAARoleName: Leave the default (NAAExecRole)
+   8. Permissions: Service-managed permissions
+   9. Deployment targets: Leave "Deploy to organization" selected along with defaults
+   10. Specify regions: Select a single region as IAM is global. (E.g., Use the region the Network Access Analyzer EC2 Instance will be deployed in)
+   11. OPTIONAL: Specify Deployment Options: Set BOTH "Maximum concurrent accounts" and "Failure tolerance" to a high number (E.g. 100) to have the stacks deploy to this number of AWS accounts simultaneously.
+   12. Next
+   13. Review the summary
+   14. Check the box to approve "I acknowledge that AWS CloudFormation might create IAM resources with custom names."
+   15. Submit
     >Monitor the "Stack instances" (Individual account status) and Operations (Overall) tabs to determine when the deploy is completed.
 
     **Deploy the naa-execrole.yaml CFT template to the AWS Org management account (root) via a stack:**
@@ -127,7 +127,7 @@ Note: The easiest way to do this is to utilize service-managed permissions when 
 ![InstanceConnect](docs/images/InstanceConnect.png)
 
 4. Review the naa-script.sh script to validate settings and then execute to begin the analysis
->Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
+    >Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnect session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
     1. sudo -i
     2. screen
     3. cd /usr/local/bin/naa
@@ -135,7 +135,7 @@ Note: The easiest way to do this is to utilize service-managed permissions when 
     5. ./naa-script.sh
 
 5. Monitor for any errors to make sure execution is working properly.
->Note: The first time the script is executed, it will setup the naa-exclusions.csv file.  It will generate an error about not being able to download the file from the S3 bucket which is expected.  Subsequent executions, will not display an error.
+    >Note: The first time the script is executed, it will setup the naa-exclusions.csv file.  It will generate an error about not being able to download the file from the S3 bucket which is expected.  Subsequent executions, will not display an error.
 
 6. Once the script completes, review the findings which have been uploaded to the S3 bucket  
     Unprocessed JSON from each account/region will be included in the zip file.
