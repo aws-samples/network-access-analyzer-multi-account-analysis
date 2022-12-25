@@ -50,7 +50,7 @@ Large scale deployment and automation are achieved through the use of bash scrip
 
 Cron can be configured to automatically execute the /usr/local/bin/naa/naa-script.sh on a schedule.  Initial configuration can be done via the CFT parameters.
 
-### Example Output (Sanitized)
+## Example Output (Sanitized)
 
 **AWS Account list generation**  
 ![AWS Account list generation](docs/images/AWSAccountInventory.png)
