@@ -77,7 +77,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     12. Once the Stack has finished deploying, click the Outputs tab in the CloudFormation console and copy the NAAEC2Role ARN for use with the next CloudFormation template deploys.
 
 2. Deploy the IAM cross account role to all AWS organization member accounts (naa-execrole.yaml)  
-    >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization. 
+    >Note: The easiest way to do this is to utilize service-managed permissions when deploying the stack and deploying to the entire organization.
     > > This will require trust to be established between CloudFormation and the AWS Organization. If it is not already established, the CloudFormation console for StackSets will present a button which should be clicked and states "Enable trusted access with AWS Organizations to use service-managed permissions."
    1. Open the CloudFormation console
    2. Click StackSets
@@ -128,7 +128,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     >Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnected session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
     1. sudo -i
     2. screen
-    3. cd /usr/local/bin/naa
+    3. cd /usr/local/naa
     4. vi naa-script.sh and review the variables at top portion of the script.  If correct, save and exit (:q! (quit) or :wq! (save and quit)  
     5. ./naa-script.sh
 

@@ -447,11 +447,12 @@ Resources:
         Fn::Base64:
           Fn::Sub: |
             #!/bin/bash
+
+            #Upgrade the OS
             yum upgrade -y
             
             #Install script dependencies
             yum install -y jq pip
-
             yum remove -y awscli
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
@@ -460,33 +461,36 @@ Resources:
             pip3 install csvkit
             ln -s /usr/local/bin/csvjoin /usr/bin
 
-            mkdir /usr/local/bin/naa
+            mkdir /usr/local/naa
 
             #Download the python finding conversion script 
-            wget -P /usr/local/bin/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
 
             #Download the naa-script.sh script 
-            wget -P /usr/local/bin/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
 
-            chmod +x /usr/local/bin/naa/naa-script.sh
+            chmod +x /usr/local/naa/naa-script.sh
 
-            #Replace default script variable values in /usr/local/bin/naa/naa-script.sh with parameters configured during CFT deploy
+            #Replace default script variable values in /usr/local/naa/naa-script.sh with parameters configured during CFT deploy
+            #Note: This occurs ONCE during EC2 deployment and must be manually configured after deploy if additional tuning is required
+            #       Commented variables are left unchanged in the script
+            #       Multiple individual sed commands used for readability
 
             #SPECIFIC_ACCOUNTID_LIST="allaccounts"
-            sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/bin/naa/naa-script.sh
-            sed -i 's/IAM_CROSS_ACCOUNT_ROLE="NAAExecRole"/IAM_CROSS_ACCOUNT_ROLE="${IAMNAAExecRole}"/' /usr/local/bin/naa/naa-script.sh
+            sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/IAM_CROSS_ACCOUNT_ROLE="NAAExecRole"/IAM_CROSS_ACCOUNT_ROLE="${IAMNAAExecRole}"/' /usr/local/naa/naa-script.sh
             #SCRIPT_EXECUTION_MODE="CREATE_ANALYZE"
-            sed -i 's/SCOPE_NAME_VALUE="naa-external-ingress"/SCOPE_NAME_VALUE="${ScopeNameValue}"/' /usr/local/bin/naa/naa-script.sh
-            sed -i 's/EXCLUSIONS_FILE="naa-exclusions.csv"/EXCLUSIONS_FILE="${ExclusionsFile}"/' /usr/local/bin/naa/naa-script.sh
+            sed -i 's/SCOPE_NAME_VALUE="naa-external-ingress"/SCOPE_NAME_VALUE="${ScopeNameValue}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/EXCLUSIONS_FILE="naa-exclusions.csv"/EXCLUSIONS_FILE="${ExclusionsFile}"/' /usr/local/naa/naa-script.sh
             #SCOPE_FILE="naa-scope.json"
-            sed -i 's/S3_BUCKET="SetS3Bucket"/S3_BUCKET="${S3Bucket}"/' /usr/local/bin/naa/naa-script.sh
-            sed -i 's/PARALLELISM="10"/PARALLELISM="${Parallelism}"/' /usr/local/bin/naa/naa-script.sh
-            sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/bin/naa/naa-script.sh
+            sed -i 's/S3_BUCKET="SetS3Bucket"/S3_BUCKET="${S3Bucket}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/PARALLELISM="10"/PARALLELISM="${Parallelism}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
             #S3_EXCLUSION_FILE="true"
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then
-              echo "${CronScheduleExpression} root BASH_ENV=/etc/profile /usr/local/bin/naa/naa-script.sh >> /usr/local/bin/naa/naa-cron.log 2>&1" > /etc/cron.d/naa-schedule
+              echo "${CronScheduleExpression} root BASH_ENV=/etc/profile /usr/local/naa/naa-script.sh >> /usr/local/naa/naa-cron.log 2>&1" > /etc/cron.d/naa-schedule
             fi
             
       Tags:
