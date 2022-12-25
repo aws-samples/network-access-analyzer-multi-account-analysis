@@ -100,4 +100,4 @@ Cron can be configured to automatically execute the /usr/local/bin/naa/naa-scrip
 
 ## Link to APG Pattern (Authorized Access Only)
 
-[APG Pattern](https://apg-library.amazonaws.com/content/eda6abba-632a-4e3d-92b9-31848fa6dead)
+[https://apg-library.amazonaws.com/content/eda6abba-632a-4e3d-92b9-31848fa6dead](https://apg-library.amazonaws.com/content/eda6abba-632a-4e3d-92b9-31848fa6dead)
