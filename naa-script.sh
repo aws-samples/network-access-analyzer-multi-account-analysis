@@ -33,7 +33,7 @@ EXCLUSIONS_FILE="naa-exclusions.csv"
 
 SCOPE_FILE="naa-scope.json"
 
-S3_BUCKET="naa-859254877060-us-east-1"
+S3_BUCKET="SetS3Bucket"
 
 PARALLELISM="10"
 
