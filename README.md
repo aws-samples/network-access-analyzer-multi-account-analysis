@@ -48,7 +48,7 @@ All findings are consolidated on the EC2 instance, processed, and uploaded to a 
 
 Large scale deployment and automation are achieved through the use of bash scripting.  The CLI capabilities of Network Access Analyzer are leveraged.
 
-Cron can be configured to automatically execute the /usr/local/bin/naa/naa-script.sh on a schedule.  Initial configuration can be done via the CFT parameters.
+Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh on a schedule.  Initial configuration can be done via the CFT parameters.
 
 ## **Example Output (Sanitized)**
 
