@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Variable Descriptions:
-#   1) SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those
+#   1) SPECIFIC_ACCOUNTID_LIST (SPACE DELIMITED): List specific accounts if you wish to run the command only against those
 #        or leave "allaccounts" to detect and execute against all accounts in the AWS Org
 #   2) REGION_LIST (SPACE DELIMITED): Specify regions to analyze with Network Access Analyzer
 #   3) IAM_CROSS_ACCOUNT_ROLE: The IAM Role name created for cross account execution
@@ -38,6 +38,7 @@ S3_BUCKET="SetS3Bucket"
 PARALLELISM="10"
 
 S3_EXCLUSION_FILE="true"
+
 #########################################
 
 #Create the network access analyzer scope JSON file
