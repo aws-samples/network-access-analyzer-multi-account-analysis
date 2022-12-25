@@ -38,6 +38,7 @@ S3_BUCKET="SetS3Bucket"
 PARALLELISM="10"
 
 S3_EXCLUSION_FILE="true"
+
 #########################################
 
 #Create the network access analyzer scope JSON file
