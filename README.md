@@ -1,12 +1,12 @@
-# Network Access Analyzer Multi-Account Analysis
+# **Network Access Analyzer Multi-Account Analysis**
 
-## Summary
+## **Summary**
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
 This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV which does not yet exist natively within Network Access Analzyer. (Future roadmap items)
 
-## Overview
+## **Overview**
 
 **Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.**
 
@@ -21,16 +21,16 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-## Limitations
+## **Limitations**
 
 Network Access Analyzer analyzes resources within a single account.  
 Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
 
-## Technology stack
+## **Technology stack**
 
 VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Python
 
-## Solution Architecture
+## **Solution Architecture**
 
 The architecture of this solution uses to assess environments is comprised of a few key components.
 
@@ -44,13 +44,13 @@ A Network Access Analyzer scope is deployed in each member account and is analyz
 
 All findings are consolidated on the EC2 instance, processed, and uploaded to a S3 bucket which is created during the initial solution deployment.
 
-## Automation and scale
+## **Automation and scale**
 
 Large scale deployment and automation are achieved through the use of bash scripting.  The CLI capabilities of Network Access Analyzer are leveraged.
 
 Cron can be configured to automatically execute the /usr/local/bin/naa/naa-script.sh on a schedule.  Initial configuration can be done via the CFT parameters.
 
-## Example Output (Sanitized)
+## **Example Output (Sanitized)**
 
 **AWS Account list generation**  
 ![AWS Account list generation](docs/images/AWSAccountInventory.png)
@@ -62,7 +62,7 @@ Cron can be configured to automatically execute the /usr/local/bin/naa/naa-scrip
 ![ReportExample01](docs/images/ReportExample01.png)
 ![ReportExample02](docs/images/ReportExample02.png)
 
-## Related Resources
+## **Related Resources**
 
 - NetworkAccessAnalyzerProcedure.md:  
     Step by step instructions for provisioning the solution and usage.
@@ -89,15 +89,15 @@ Cron can be configured to automatically execute the /usr/local/bin/naa/naa-scrip
 - naa-findings2csv.py:  
     Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
 
-## References
+## **References**
 
 [What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
 [Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)
 
-## Videos
+## **Videos**
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-## Link to APG Pattern (Authorized Access Only)
+## **Link to APG Pattern (Authorized Access Only)**
 
 [https://apg-library.amazonaws.com/content/eda6abba-632a-4e3d-92b9-31848fa6dead](https://apg-library.amazonaws.com/content/eda6abba-632a-4e3d-92b9-31848fa6dead)
