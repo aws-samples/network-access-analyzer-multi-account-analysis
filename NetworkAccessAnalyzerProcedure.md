@@ -1,6 +1,6 @@
-# Network Access Analyzer Multi-Account Analysis
+# **Network Access Analyzer Multi-Account Analysis**
 
-## Table of Contents
+## **Table of Contents**
 
 1. [Summary](#summary)
 2. [Overview](#overview)
@@ -9,7 +9,7 @@
 5. [Exclusions](#exclusions)
 6. [Appendix](#appendix)
 
-## Summary
+## **Summary**
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
@@ -18,7 +18,7 @@ This solution has been built to extend the functionality of organization-wide an
 The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
 The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
 
-## Overview
+## **Overview**
 
 Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
 
@@ -30,7 +30,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
-## Prerequisites
+## **Prerequisites**
 
 - The default behavior of the naa-script.sh script is to leverage the IAM Role attached to the EC2 Role in order to assume an IAM Role in the ORG root account and generate a list of all member accounts in the AWS Org.  This behavior requires AWS Organizations to be provisioned and the member accounts associated with the AWS Organization.
 
@@ -38,7 +38,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-## Implementation Procedure
+## **Implementation Procedure**
 
 1. Deploy the EC2 instance and supporting resources (naa-resources.yaml)  
     >Note: When deploying the CFT template, it will provision an IAM Role, S3 Bucket with policy, SNS Topic, and EC2 instance which will be used by the Network Access Analyzer script.
@@ -140,7 +140,7 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 8. OPTIONAL: If during deployment, the Cloudformation paramater "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist.  This cron entry will automatically execute the naa-script.sh based on the schedule set.  If the schedule needs to be adjusted, the "/etc/cron.d/naa-schedule" file can be manually tuned.
 
-## Exclusions
+## **Exclusions**
 
 1. A variable named S3_EXCLUSION_FILE can be set to true (default) or false.
    - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
@@ -152,9 +152,9 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
 
-## Appendix
+## **Appendix**
 
-### Script Variables
+### **Script Variables**
 
 - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
     >Default Value: allaccounts
