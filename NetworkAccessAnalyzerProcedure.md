@@ -6,8 +6,9 @@
 2. [Overview](#overview)
 3. [Prerequisites](#prerequisites)
 4. [Implementation Procedure](#implementation-procedure)
-5. [Exclusions](#exclusions)
-6. [Appendix](#appendix)
+5. [Future Analysis Executions](#future-analysis-executions)
+6. [Exclusions](#exclusions)
+7. [Appendix](#appendix)
 
 ## **Summary**
 
@@ -143,19 +144,35 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 7. Once the script completes, review the findings which have been uploaded to the S3 bucket  
     Unprocessed JSON from each account/region will be included in the zip file.
 
-8. OPTIONAL: If during deployment, the Cloudformation paramater "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist.  This cron entry will automatically execute the naa-script.sh based on the schedule set.  If the schedule needs to be adjusted, the "/etc/cron.d/naa-schedule" file can be manually tuned.
+## **Future Analysis Executions**
+
+- Automated via Cron:  
+    If during deployment, the Cloudformation paramater "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist on the EC2 instance.  
+    This cron entry will automatically execute the naa-script.sh based on the schedule set within the cron file.  
+    If the schedule needs to be adjusted, the "/etc/cron.d/naa-schedule" file can be manually tuned with an editor.
+- Manual:  
+    Log into the EC2 instance and execute the commands to start the analysis:
+
+    ```bash
+    sudo -i
+    screen
+    cd /usr/local/naa
+    ./naa-script.sh
+    ```
 
 ## **Exclusions**
 
-1. A variable named S3_EXCLUSION_FILE can be set to true (default) or false.
-   - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
-        - If a failure is generated, errors will be displayed, a local default local file will be created if it doesn't exist already, and then it will be uploaded to the S3 bucket.  
-        - During script executions, the EXCLUSIONS_FILE which is present locally on the EC2 WILL BE OVERWRITTEN with the file located in the S3_BUCKET.  
-   - If false, the script will generate a local EXCLUSIONS_FILE if it doesn't exist  
-2. Edit this file and specify details about findings (one per line) to the file to exclude them from the NAA finding output
-    - IF S3_EXCLUSION_FILE is true, edit the EXCLUSIONS_FILE in the S3 bucket and if false, edit the local EC2 EXCLUSIONS_FILE  
-   Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
-   e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
+In order to exclude known good findings from analysis output, an exclusion process has been built.
+
+- A variable named S3_EXCLUSION_FILE in naa-script.sh can be set to true (default) or false.
+  - If true, the script will retrieve a copy of the EXCLUSIONS_FILE (default is naa-exclusions.csv) from S3_BUCKET
+    - If a failure is generated, errors will be displayed, a local default local file will be created if it doesn't exist already, and then it will be uploaded to the S3 bucket.  
+    - During script executions, the EXCLUSIONS_FILE which is present locally on the EC2 WILL BE OVERWRITTEN with the file located in the S3_BUCKET.  
+  - If false, the script will generate a local EXCLUSIONS_FILE if it doesn't exist  
+- Edit this file and specify details about findings (one per line) in the file to exclude them from the NAA finding output
+  - If S3_EXCLUSION_FILE is true, edit the EXCLUSIONS_FILE in the S3 bucket and if false, edit the local EC2 EXCLUSIONS_FILE  
+    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
+    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
 
 ## **Appendix**
 
