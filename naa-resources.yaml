@@ -257,7 +257,7 @@ Resources:
             - !Ref S3Bucket
           object:
             key:
-              - anything-but: !Ref ExclusionsFile
+              - prefix: "naa-findings"
       State: ENABLED
       Targets:
         - Arn: !Ref NAASNSTopic
@@ -267,8 +267,7 @@ Resources:
               "s3bucket": "$.detail.bucket.name"
               "s3objectkey": "$.detail.object.key"
             InputTemplate: |
-              "NAA asessment has completed and the report has been uploaded to the S3 Bucket."
-              "Please download and process the findings"
+              "NAA analysis has completed and the report has been uploaded to the S3 Bucket."
               "S3 Bucket Name: <s3bucket>"
               "S3 Object Key: <s3objectkey>"
           RetryPolicy:
