@@ -131,7 +131,9 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
     sudo -i
     screen
     cd /usr/local/naa
-    vi naa-script.sh and review the variables at top portion of the script.  If correct, save and exit (:q! (quit) or :wq! (save and quit)  
+
+    vi naa-script.sh    #Or any other editor such as nano
+
     ./naa-script.sh
     ```
 
