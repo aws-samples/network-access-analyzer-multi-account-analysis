@@ -126,11 +126,14 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
 
 5. Review the naa-script.sh script to validate settings and then execute to begin the analysis
     >Note: Screen will be used to allow the naa-script.sh script to continue executing if console access is lost. To resume a disconnected session, log back into the EC2 instance, sudo -i,  and execute screen -r (screen must be resumed by the same user it detached under)
-    1. sudo -i
-    2. screen
-    3. cd /usr/local/naa
-    4. vi naa-script.sh and review the variables at top portion of the script.  If correct, save and exit (:q! (quit) or :wq! (save and quit)  
-    5. ./naa-script.sh
+
+    ```bash
+    sudo -i
+    screen
+    cd /usr/local/naa
+    vi naa-script.sh and review the variables at top portion of the script.  If correct, save and exit (:q! (quit) or :wq! (save and quit)  
+    ./naa-script.sh
+    ```
 
 6. Monitor for any errors to make sure execution is working properly.
     >Note: The first time the script is executed, it will setup the naa-exclusions.csv file.  It will generate an error about not being able to download the file from the S3 bucket which is expected.  Subsequent executions, will not display an error.
