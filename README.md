@@ -32,17 +32,7 @@ VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Python
 
 ## **Solution Architecture**
 
-The architecture of this solution uses to assess environments is comprised of a few key components.
-
-An IAM Role (NAAEC2Role) is provisioned in an account where the EC2 based NAA analysis instance will be provisioned
-
-An EC2 instance is provisioned, the NAAEC2Role attached, and the EC2 instance prepared with all dependencies via EC2 UserData
-
-An IAM Role is (NAAExecRole) is provisioned in the Org root account, as well as all member accounts which allow for cross-account assume by the NAAEC2Role
-
-A Network Access Analyzer scope is deployed in each member account and is analyzed via bash script automation
-
-All findings are consolidated on the EC2 instance, processed, and uploaded to a S3 bucket which is created during the initial solution deployment.
+![SolutionArchitecture](docs/images/NAAAnalysisArchitecture.png)
 
 ## **Automation and scale**
 
