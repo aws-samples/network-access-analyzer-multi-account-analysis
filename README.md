@@ -20,7 +20,7 @@ The findings are then processed via a Python script, data extracted to build a c
 Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)  
-[Demo - Organization-wide Internet Ingress Data Path Analysis](https://youtu.be/1IFNZWy4iy0)
+[Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)
 
 ## **Limitations**
 
@@ -88,7 +88,7 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
 ## **Videos**
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)  
-[Demo - Organization-wide Internet Ingress Data Path Analysis](https://youtu.be/1IFNZWy4iy0)
+[Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)
 
 ## **Link to APG Pattern (Authorized Access Only)**
 
