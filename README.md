@@ -90,7 +90,9 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
 ## **Videos**
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)  
-[Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)
+
+[Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)  
+[![Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](docs/images/NAADemoThumbnail.png)](https://youtu.be/1IFNZWy4iy0)
 
 ## **Link to APG Pattern (Authorized Access Only)**
 
