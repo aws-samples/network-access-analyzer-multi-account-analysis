@@ -19,6 +19,8 @@ The findings are then processed via a Python script, data extracted to build a c
 
 Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
+## **Videos**
+
 [Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)  
 [![Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](docs/images/NAADemoThumbnail.png)](https://youtu.be/1IFNZWy4iy0)  
 
@@ -87,14 +89,6 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
 
 [What is Network Access Analyzer?](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html)  
 [Network Access Analyzer Blog](https://aws.amazon.com/blogs/aws/new-amazon-vpc-network-access-analyzer/)
-
-## **Videos**
-
-[Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](https://youtu.be/1IFNZWy4iy0)  
-[![Demo - Organization-wide Internet Ingress Data Path Analysis Using Network Access Analyzer](docs/images/NAADemoThumbnail.png)](https://youtu.be/1IFNZWy4iy0)  
-
-[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)  
-[![AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](docs/images/NAAReinforceThumbnail.png)](https://youtu.be/aN2P2zeQek0)  
 
 ## **Link to APG Pattern (Authorized Access Only)**
 
