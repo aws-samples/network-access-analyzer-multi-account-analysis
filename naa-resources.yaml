@@ -31,7 +31,7 @@ Metadata:
           - IAMNAAEC2Role
           - IAMNAAExecRole
       - Label:
-          default: "Network Access Analzyer Script Parameters"
+          default: "Network Access Analyzer Script Parameters"
         Parameters:
           - Parallelism
           - Regions
@@ -109,7 +109,7 @@ Parameters:
       - false
   CronScheduleExpression:
     Type: "String"
-    Description: "Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)"
+    Description: "Specify the frequency of Network Access Analyzer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)"
     Default: "0 0 * * 0"
 
 Mappings: 
