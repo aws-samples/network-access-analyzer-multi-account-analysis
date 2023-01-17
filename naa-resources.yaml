@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >
   Deploys an EC2 Instance, S3 bucket, and IAM Cross-Account trusted Role for use with the Network Access Analyzer script. 
-  Userdata has a bash script embedded which will be used for multi-account scanning. 
-  Note that $ and ` in Userdata are escaped with \ if they are not supposed to be interpreted by CloudFormation
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -55,11 +53,11 @@ Parameters:
     Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
   InstanceType:
     Type: String
+    Description: "Specify the instance size to use"
     Default: t3.small
     AllowedValues:
       - t3.small
       - t2.small
-    Description: "Specify the instance size to use"
   BucketName:
     Type: String
     Description: Specify the Bucket Name for the NAA output and exception file download (Account ID and Region will be appended e.g. naa-<AccountID>-<region>)
