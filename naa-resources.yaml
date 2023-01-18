@@ -166,7 +166,7 @@ Resources:
               - "s3:GetObject"
             Resource: !Sub "arn:${AWS::Partition}:s3:::${S3Bucket}/*"
       Roles:
-        - Ref: "IAMNAAEC2Role"
+        - Ref: "NAAEC2Role"
 
   NAAEC2Role:
     Type: "AWS::IAM::Role"
@@ -197,7 +197,7 @@ Resources:
       InstanceProfileName: !Sub "${IAMNAAEC2Role}"
       Path: "/"
       Roles:
-        - Ref: "IAMNAAEC2Role"
+        - Ref: "NAAEC2Role"
 
   NAASNSTopic:
     Condition: EmailProvided
@@ -428,7 +428,7 @@ Resources:
             VolumeType: "gp3"
             Encrypted: true
       SubnetId: !Ref SubnetId
-      IamInstanceProfile: !Ref IAMNAAEC2Role
+      IamInstanceProfile: !Ref NAAEC2Role
       LaunchTemplate:
         LaunchTemplateId:
           Ref: "LaunchTemplate"
