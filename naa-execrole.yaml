@@ -38,7 +38,7 @@ Resources:
             Version : "2012-10-17"
             Statement:
             - Effect: Allow
-              Sid: ActionsPermittedForScriptAccountListGenerationREQUIRED
+              Sid: ActionsPermittedForScriptAccountListGeneration
               Action:
                 - "organizations:ListAccounts"
               Resource: "*"
