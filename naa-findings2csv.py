@@ -183,24 +183,9 @@ def get_account_id():
 
 def map_naa_finding_to_sh(finding_details):
     naa_finding = []
-    finding_hash = hashlib.sha256(f"{finding_details['instance_arn']}-{finding_details['resource_id']}".encode()).hexdigest()
+    finding_hash = hashlib.sha256(f"{finding_details['resource_id']}-{finding_details['sgrule_cidr']}-{finding_details['sgrule_portrange']}".encode()).hexdigest()
     finding_id = (f"arn:aws:securityhub:{finding_details['region']}:{finding_details['account']}:vpn/naa/{finding_hash}")
     local_account_id = get_account_id()
-    resources_details = {
-        'Account': finding_details['account'],
-        'AwsEc2Instance': finding_details['instance_id'],
-        'AwsEc2NetworkInterface': finding_details['resource_id'],
-        'AwsEc2SecurityGroup': finding_details['secgroup_id'],
-        'AwsEc2Vpc': finding_details['vpc_id'],
-        'AwsEc2Subnet': finding_details['subnet_id'],
-        'Instance_arn': finding_details['instance_arn'],
-        'Instance_name': finding_details['instance_name'],
-        'Resource_arn': finding_details['resource_arn'],
-        'Sgrule_direction': finding_details['sgrule_direction'],
-        'Sgrule_cidr': finding_details['sgrule_cidr'],
-        'Sgrule_protocol': finding_details['sgrule_protocol'],
-        'Sgrule_portrange': finding_details['sgrule_portrange']
-    }
     naa_finding.append({
         "SchemaVersion": "2018-10-08",
         "Id": finding_id,
@@ -228,10 +213,10 @@ def map_naa_finding_to_sh(finding_details):
         'Resources': [
             {
                 'Type': "Other",
-                'Id': finding_details['resource_id'],
+                'Id': finding_details['resource_id']+"_"+finding_details['sgrule_portrange'],
                 "Partition": "aws",
                 'Region': finding_details['region'],
-                'Details': {'Other': resources_details}
+                'Details': {'Other': finding_details}
             }
         ]
     })
