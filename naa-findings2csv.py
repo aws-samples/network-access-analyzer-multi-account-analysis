@@ -11,8 +11,11 @@ import sys
 import getopt
 import os
 import os.path
+import boto3
+import hashlib
+from datetime import datetime, timezone
 
-
+SECURITYHUB = boto3.client('securityhub')
 
 def main():
     FIELDS = ['account','region','vpc_id','subnet_id','instance_id','instance_arn','instance_name','resource_id','resource_arn','secgroup_id','sgrule_direction','sgrule_cidr','sgrule_protocol','sgrule_portrange']
@@ -150,12 +153,99 @@ def main():
 
             if not skip_finding:
                 rows.append([account,region,vpc_id,subnet_id,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
+                finding_details = {
+                    "account": account,
+                    "region": region,
+                    "vpc_id": vpc_id,
+                    "subnet_id": subnet_id,
+                    "instance_id": instance_id,
+                    "instance_arn": instance_arn,
+                    "instance_name": instance_name,
+                    "resource_id": resource_id,
+                    "resource_arn": resource_arn,
+                    "secgroup_id": secgroup_id,
+                    "sgrule_direction": sgrule_direction,
+                    "sgrule_cidr": sgrule_cidr,
+                    "sgrule_protocol": sgrule_protocol,
+                    "sgrule_portrange": sgrule_portrange
+                }
+                map_naa_finding_to_sh(finding_details)
             skip_finding = False
 
         csvwriter.writerows(rows)
 
         # Closing file
         f.close()
+
+def get_account_id():
+    client = boto3.client("sts")
+    return client.get_caller_identity()["Account"]
+
+def map_naa_finding_to_sh(finding_details):
+    naa_finding = []
+    finding_hash = hashlib.sha256(f"{finding_details['instance_arn']}-{finding_details['resource_id']}".encode()).hexdigest()
+    finding_id = (f"arn:aws:securityhub:{finding_details['region']}:{finding_details['account']}:vpn/naa/{finding_hash}")
+    local_account_id = get_account_id()
+    resources_details = {
+        'Account': finding_details['account'],
+        'AwsEc2Instance': finding_details['instance_id'],
+        'AwsEc2NetworkInterface': finding_details['resource_id'],
+        'AwsEc2SecurityGroup': finding_details['secgroup_id'],
+        'AwsEc2Vpc': finding_details['vpc_id'],
+        'AwsEc2Subnet': finding_details['subnet_id'],
+        'Instance_arn': finding_details['instance_arn'],
+        'Instance_name': finding_details['instance_name'],
+        'Resource_arn': finding_details['resource_arn'],
+        'Sgrule_direction': finding_details['sgrule_direction'],
+        'Sgrule_cidr': finding_details['sgrule_cidr'],
+        'Sgrule_protocol': finding_details['sgrule_protocol'],
+        'Sgrule_portrange': finding_details['sgrule_portrange']
+    }
+    naa_finding.append({
+        "SchemaVersion": "2018-10-08",
+        "Id": finding_id,
+        "ProductArn": (f"arn:aws:securityhub:{finding_details['region']}:{local_account_id}:product/{local_account_id}/default"),
+        "GeneratorId": "NetworkAccessAnalzyer",
+        "AwsAccountId": local_account_id,
+        'ProductFields': {
+                'ProviderName': 'Network Access Analyzer'
+            },
+        "Types": [
+            "Software and Configuration Checks/AWS Security Best Practices/Network Reachability"
+        ],
+        "CreatedAt": str(datetime.now().isoformat())+"Z",
+        "UpdatedAt": str(datetime.now().isoformat())+"Z",
+        "Severity": {
+            "Label": "INFORMATIONAL"
+        },
+        "Title": "Network Access Analyzer - Ingress Data Path From Internet",
+        "Description": "An ingress data path from the Internet to an AWS resource has been located by Network Access Analyzer",
+        'Remediation': {
+            'Recommendation': {
+                'Text': 'Investigate the finding and determine if it is authorized or not.  Authorized findings can be excluded and unauthorized findings should be remediated'
+            }
+        },
+        'Resources': [
+            {
+                'Type': "Other",
+                'Id': finding_details['resource_id'],
+                "Partition": "aws",
+                'Region': finding_details['region'],
+                'Details': {'Other': resources_details}
+            }
+        ]
+    })
+    
+    if naa_finding:
+        try:
+            response = SECURITYHUB.batch_import_findings(Findings=naa_finding)
+            if response['FailedCount'] > 0:
+                print(
+                    "Failed to import {} findings".format(
+                        response['FailedCount']))
+        except Exception as error:
+            print("Error: ", error)
+            raise
 
 if __name__ == "__main__":
     main()
