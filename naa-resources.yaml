@@ -158,6 +158,7 @@ Resources:
             Sid: AllowDescribeOrg
             Action:
               - "organizations:DescribeOrganization"
+            Resource: "*"
           - Effect: Allow
             Sid: AllowImportFindingsToSecHub
             Action:
@@ -465,7 +466,7 @@ Resources:
             mkdir /usr/local/naa
 
             #Download the python finding conversion script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/SecurityHubIntegration/naa-findings2csv.py
 
             #Download the naa-script.sh script 
             wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
