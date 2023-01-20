@@ -307,15 +307,18 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
     done
 
     #Zip all individual findings into single file for archive
-        echo ""
+    echo ""
     echo "Zip files"
     zip naaoutput/naa-unprocessed-$OUTPUT_SUFFIX.zip naaoutput/naa-unprocessed*.json naaoutput/naa-processfindingsresults.txt
 
     #Remove unprocessed finding files which now exist within the zip file
     rm -f naaoutput/naa-unprocessed-*.json naaoutput/naa-processfindingsresults.txt
 
-    #Copy zip file to S3 bucket
-    aws s3 cp ./naaoutput s3://$S3_BUCKET --recursive --exclude "*" --include "naa*.zip" --include "naa-findings*.csv"
+    #If the analysis contains findings, copy zip file to S3 bucket (A CSV file with 1 row contains only a header)
+    NAAFINDINGSWC=$(wc -l < naaoutput/naa-findings-$OUTPUT_SUFFIX.csv)
+    if [[ $NAAFINDINGSWC -gt 1 ]]; then
+        aws s3 cp ./naaoutput s3://$S3_BUCKET --recursive --exclude "*" --include "naa*.zip" --include "naa-findings*.csv"
+    fi
 
     echo ""
     echo "view output at command line with:"
