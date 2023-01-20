@@ -222,7 +222,7 @@ def map_naa_finding_to_sh(finding_details):
         "Description": "An ingress data path from the Internet to an AWS resource has been located by Network Access Analyzer",
         'Remediation': {
             'Recommendation': {
-                'Text': 'Investigate the finding and determine if it is authorized or not.  Authorized findings can be excluded and unauthorized findings should be remediated'
+                'Text': 'Investigate the finding and determine if it is intended or not.  Intended findings can be excluded and unintended findings should be remediated'
             }
         },
         'Resources': [
