@@ -112,7 +112,7 @@ Parameters:
   FindingsToSH:
     Type: "String"
     Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed"
-    Default: "YES"
+    Default: "NO"
     AllowedValues:
       - "YES"
       - "NO"
@@ -506,7 +506,7 @@ Resources:
             sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
             #S3_EXCLUSION_FILE="true"
             sed -i 's/FINDINGS_TO_CSV="YES"/FINDINGS_TO_CSV="${FindingsToCSV}"/' /usr/local/naa/naa-script.sh
-            sed -i 's/FINDINGS_TO_SH="YES"/FINDINGS_TO_SH="${FindingsToSH}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/FINDINGS_TO_SH="NO"/FINDINGS_TO_SH="${FindingsToSH}"/' /usr/local/naa/naa-script.sh
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then

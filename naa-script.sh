@@ -43,7 +43,7 @@ S3_EXCLUSION_FILE="true"
 
 FINDINGS_TO_CSV="YES"
 
-FINDINGS_TO_SH="YES"
+FINDINGS_TO_SH="NO"
 
 #########################################
 

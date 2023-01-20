@@ -209,4 +209,4 @@ In order to exclude known good findings from analysis output, an exclusion proce
 - Configure FINDINGS_TO_CSV to specify if findings should be output to CSV
     >Default Value: YES
 - Configure FINDINGS_TO_SH to specify if findings should be import into Security Hub
-    >Default Value: YES
+    >Default Value: NO
