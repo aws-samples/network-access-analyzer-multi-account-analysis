@@ -37,6 +37,8 @@ Metadata:
           - Regions
           - ScopeNameValue
           - ExclusionsFile
+          - FindingsToCSV
+          - FindingsToSH
           - ScheduledAnalysis
           - CronScheduleExpression
 
@@ -105,15 +107,15 @@ Parameters:
     Description: "Specify YES to output findings to a CSV and have it uploaded to the S3 bucket or NO to disable"
     Default: "YES"
     AllowedValues:
-      - YES
-      - NO
+      - "YES"
+      - "NO"
   FindingsToSH:
     Type: "String"
     Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed"
     Default: "YES"
     AllowedValues:
-      - YES
-      - NO
+      - "YES"
+      - "NO"
   ScheduledAnalysis:
     Type: "String"
     Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must be manually deleted to remove the cron schedule)"
