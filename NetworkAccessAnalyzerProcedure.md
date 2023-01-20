@@ -72,7 +72,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
             - ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
             - ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON data parsing
             - FindingsToCSV: Specify if findings should be output to CSV
-            - FindingsToSH: Specify if findings should be output to Security Hub
+            - FindingsToSH: Specify if findings should be import into Security Hub
             - ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
             - CronScheduleExpression: Specify the frequency of Network Access Analyzer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
     8. Next

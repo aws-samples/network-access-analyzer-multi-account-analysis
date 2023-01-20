@@ -16,8 +16,8 @@
 #   9) Configure PARALLELISM for the number of accounts to process simultaneously
 #   10) Configure S3_EXCLUSION_FILE is set to true by default. This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE
 #       and overwrites the local copy on EC2 upon script execution. Set to false to utilize a local exclusion file without the s3 download copy
-#   11) Configure
-#   12) Configure
+#   11) Configure FINDINGS_TO_CSV to specify if findings should be output to CSV
+#   12) Configure FINDINGS_TO_SH to specify if findings should be import into Security Hub
 
 SPECIFIC_ACCOUNTID_LIST="allaccounts"
 #SPECIFIC_ACCOUNTID_LIST="123456789012 210987654321"
