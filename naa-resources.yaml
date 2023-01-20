@@ -480,10 +480,10 @@ Resources:
             mkdir /usr/local/naa
 
             #Download the python finding conversion script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/SecurityHubIntegration/naa-findingsprocess.py
 
             #Download the naa-script.sh script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/SecurityHubIntegration/naa-script.sh
 
             chmod +x /usr/local/naa/naa-script.sh
 
