@@ -23,6 +23,8 @@ def main():
     OUTPUTF = ''
     INPUTF = ''
     naa_exclusions = ''
+    FINDINGSCSV = ''
+    FINDINGSSH = ''
 
     argv = sys.argv[1:]
 
@@ -31,16 +33,20 @@ def main():
         print ("REQUIRED: -i INPUTFILE")
         print ("REQUIRED: -o OUTPUTFILE")
         print ("REQUIRED: -e EXCLUSIONFILE")
+        print ("REQUIRED: -c FINDINGSCSV")
+        print ("REQUIRED: -s FINDINGSSH")
         print ("HELP: -h")
         quit()
 
     try:
-        opts, args = getopt.getopt(argv, "he:i:o:")
+        opts, args = getopt.getopt(argv, "he:i:o:c:s:")
     except getopt.GetoptError:
         print ("Pass required parameters with:")
         print ("REQUIRED: -i INPUTFILE")
         print ("REQUIRED: -o OUTPUTFILE")
         print ("REQUIRED: -e EXCLUSIONFILE")
+        print ("REQUIRED: -c FINDINGSCSV")
+        print ("REQUIRED: -s FINDINGSSH")
         print ("HELP: -h")
         quit()
 
@@ -50,6 +56,8 @@ def main():
             print ("REQUIRED: -i INPUTFILE")
             print ("REQUIRED: -o OUTPUTFILE")
             print ("REQUIRED: -e EXCLUSIONFILE")
+            print ("REQUIRED: -c FINDINGSCSV")
+            print ("REQUIRED: -s FINDINGSSH")
             print ("HELP: -h")
             quit()
         elif opt in ['-i']:
@@ -58,6 +66,10 @@ def main():
             OUTPUTF = arg
         elif opt in ['-e']:
             EXCLUSIONF = arg
+        elif opt in ['-c']:
+            FINDINGSCSVBOOL = arg
+        elif opt in ['-s']:
+            FINDINGSSHBOOL = arg
 
     # Opening NAA export JSON file
     if INPUTF:
@@ -152,24 +164,27 @@ def main():
                         continue
 
             if not skip_finding:
-                rows.append([account,region,vpc_id,subnet_id,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
-                finding_details = {
-                    "account": account,
-                    "region": region,
-                    "vpc_id": vpc_id,
-                    "subnet_id": subnet_id,
-                    "instance_id": instance_id,
-                    "instance_arn": instance_arn,
-                    "instance_name": instance_name,
-                    "resource_id": resource_id,
-                    "resource_arn": resource_arn,
-                    "secgroup_id": secgroup_id,
-                    "sgrule_direction": sgrule_direction,
-                    "sgrule_cidr": sgrule_cidr,
-                    "sgrule_protocol": sgrule_protocol,
-                    "sgrule_portrange": sgrule_portrange
-                }
-                map_naa_finding_to_sh(finding_details)
+                if (FINDINGSCSVBOOL == "YES"):
+                    rows.append([account,region,vpc_id,subnet_id,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
+
+                if (FINDINGSSHBOOL == "YES"):
+                    finding_details = {
+                        "account": account,
+                        "region": region,
+                        "vpc_id": vpc_id,
+                        "subnet_id": subnet_id,
+                        "instance_id": instance_id,
+                        "instance_arn": instance_arn,
+                        "instance_name": instance_name,
+                        "resource_id": resource_id,
+                        "resource_arn": resource_arn,
+                        "secgroup_id": secgroup_id,
+                        "sgrule_direction": sgrule_direction,
+                        "sgrule_cidr": sgrule_cidr,
+                        "sgrule_protocol": sgrule_protocol,
+                        "sgrule_portrange": sgrule_portrange
+                    }
+                    map_naa_finding_to_sh(finding_details)
             skip_finding = False
 
         csvwriter.writerows(rows)

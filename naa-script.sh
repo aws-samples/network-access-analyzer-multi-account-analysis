@@ -16,6 +16,8 @@
 #   9) Configure PARALLELISM for the number of accounts to process simultaneously
 #   10) Configure S3_EXCLUSION_FILE is set to true by default. This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE
 #       and overwrites the local copy on EC2 upon script execution. Set to false to utilize a local exclusion file without the s3 download copy
+#   11) Configure
+#   12) Configure
 
 SPECIFIC_ACCOUNTID_LIST="allaccounts"
 #SPECIFIC_ACCOUNTID_LIST="123456789012 210987654321"
@@ -38,6 +40,10 @@ S3_BUCKET="SetS3Bucket"
 PARALLELISM="10"
 
 S3_EXCLUSION_FILE="true"
+
+FINDINGS_TO_CSV="YES"
+
+FINDINGS_TO_SH="YES"
 
 #########################################
 
@@ -295,18 +301,18 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
     #Loop through files and process from json into csv
     for finding in $FINDING_FILES; do
         {
-            echo "Processing file: $finding" | tee -a naaoutput/naa-findings2csvresults.txt
-            python3 ./naa-findings2csv.py  -i $finding -o naaoutput/naa-findings-$OUTPUT_SUFFIX.csv -e $EXCLUSIONS_FILE >> naaoutput/naa-findings2csvresults.txt 2>&1
+            echo "Processing file: $finding" | tee -a naaoutput/naa-findingsprocessresults.txt
+            python3 ./naa-findingsprocess.py  -i $finding -o naaoutput/naa-findings-$OUTPUT_SUFFIX.csv -e $EXCLUSIONS_FILE -c $FINDINGS_TO_CSV -s $FINDINGS_TO_SH >> naaoutput/naa-findingsprocessresults.txt 2>&1
         }
     done
 
     #Zip all individual findings into single file for archive
         echo ""
     echo "Zip files"
-    zip naaoutput/naa-unprocessed-$OUTPUT_SUFFIX.zip naaoutput/naa-unprocessed*.json naaoutput/naa-findings2csvresults.txt
+    zip naaoutput/naa-unprocessed-$OUTPUT_SUFFIX.zip naaoutput/naa-unprocessed*.json naaoutput/naa-findingsprocessresults.txt
 
     #Remove unprocessed finding files which now exist within the zip file
-    rm -f naaoutput/naa-unprocessed-*.json naaoutput/naa-findings2csvresults.txt
+    rm -f naaoutput/naa-unprocessed-*.json naaoutput/naa-findingsprocessresults.txt
 
     #Copy zip file to S3 bucket
     aws s3 cp ./naaoutput s3://$S3_BUCKET --recursive --exclude "*" --include "naa*.zip" --include "naa-findings*.csv"

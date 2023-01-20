@@ -14,10 +14,10 @@
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
-This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV which does not yet exist natively within Network Access Analyzer. (Future roadmap items)
+This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV and/or Security Hub which does not yet exist natively within Network Access Analyzer. (Future roadmap items)
 
 The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
-The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
+The findings are then processed via a Python script, data extracted, and then a consolidated CSV file is created and uploaded to a provisioned S3 bucket, and/or import into Security Hub.
 
 ## **Overview**
 
@@ -27,7 +27,7 @@ Resources are provisioned via CloudFormation templates with tunable parameters a
 
 Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
 
-Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
+Once findings are reviewed, intended findings can be excluded from future finding output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
 [AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
 
@@ -68,9 +68,11 @@ Once findings are reviewed, intended findings can be excluded from future CSV ou
             - Parallelism: Specify the number of parallel assessments to perform.
             - Regions: Specify regions to analyze with Network Access Analyzer
             - ScopeNameValue: Specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
-            - ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON to CSV conversion
+            - ExclusionFile: Specify the exclusion file name which will be removed from output during the JSON data parsing
+            - FindingsToCSV: Specify if findings should be output to CSV
+            - FindingsToSH: Specify if findings should be output to Security Hub
             - ScheduledAnalysis: Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule mus be manually deleted to remove the cron schedule)
-            - CronScheduleExpression: Specify the frequency of Network Access Analzyer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
+            - CronScheduleExpression: Specify the frequency of Network Access Analyzer analysis via cron expression (e.g. Midnight on Sunday 0 0 \* \* 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)
     8. Next
     9. Next
     10. Review the summary
@@ -191,7 +193,7 @@ In order to exclude known good findings from analysis output, an exclusion proce
   - In order to REDEPLOY scopes, execute with DELETE mode to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
 - Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
     >Default Value: naa-external-ingress - Initially set via CFT parameter
-- Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
+- Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during JSON data parsing
     >Default Value: naa-exclusions.csv - Initially set via CFT parameter
 - Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
     >Default Value: naa-scope.json
@@ -202,3 +204,7 @@ In order to exclude known good findings from analysis output, an exclusion proce
 - Configure S3_EXCLUSION_FILE is set to true by default.  This instructs the script to download the exclusion file present in s3://S3_BUCKET/EXCLUSIONS_FILE and overwrites the local copy on EC2 upon script execution.  
     Set to false to utilize a local exclusion file without the S3 download copy
     >Default Value: true
+- Configure FINDINGS_TO_CSV to specify if findings should be output to CSV
+    >Default Value: YES
+- Configure FINDINGS_TO_SH to specify if findings should be import into Security Hub
+    >Default Value: YES

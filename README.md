@@ -15,9 +15,9 @@ Resources are provisioned via CloudFormation templates with tunable parameters a
 Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
 
 The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
-The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
+The findings are then processed via a Python script, data extracted, and then a consolidated CSV file is created and uploaded to a provisioned S3 bucket, and/or import into Security Hub.
 
-Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
+Once findings are reviewed, intended findings can be excluded from future finding output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
 ## **Videos**
 
@@ -82,8 +82,8 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
     resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
     eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80  
 
-- naa-findings2csv.py:  
-    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
+- naa-findingsprocess.py:  
+    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file and/or Security Hub.
 
 ## **References**
 
