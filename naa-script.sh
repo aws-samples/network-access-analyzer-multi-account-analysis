@@ -314,7 +314,7 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
     #Remove unprocessed finding files which now exist within the zip file
     rm -f naaoutput/naa-unprocessed-*.json naaoutput/naa-processfindingsresults.txt
 
-    #If the analysis contains findings, copy zip file to S3 bucket (A CSV file with 1 row contains only a header)
+    #If the analysis contains findings, copy zip file to S3 bucket (A CSV file with 1 row contains only a header and no findings)
     NAAFINDINGSWC=$(wc -l < naaoutput/naa-findings-$OUTPUT_SUFFIX.csv)
     if [[ $NAAFINDINGSWC -gt 1 ]]; then
         aws s3 cp ./naaoutput s3://$S3_BUCKET --recursive --exclude "*" --include "naa*.zip" --include "naa-findings*.csv"

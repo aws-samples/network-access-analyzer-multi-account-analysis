@@ -97,7 +97,7 @@ def main():
             instance_name = "N/A"
             account = "N/A"
             region = "N/A"
-            vpci_id = "N/A"
+            vpc_id = "N/A"
             subnet_id = "N/A"
             resource_id = "N/A"
             resource_arn = "N/A"
@@ -164,9 +164,11 @@ def main():
                         continue
 
             if not skip_finding:
+                #If CSV output is enabled, write a row to the CSV file
                 if (FINDINGSCSVBOOL == "YES"):
                     rows.append([account,region,vpc_id,subnet_id,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
 
+                #If Security Hub import is enabled, create a dict and call SH function
                 if (FINDINGSSHBOOL == "YES"):
                     finding_details = {
                         "account": account,
