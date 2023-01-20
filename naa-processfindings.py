@@ -245,7 +245,6 @@ def map_naa_finding_to_sh(finding_details):
                         response['FailedCount']))
         except Exception as error:
             print("Error: ", error)
-            raise
 
 if __name__ == "__main__":
     main()

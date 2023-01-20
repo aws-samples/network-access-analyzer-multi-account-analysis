@@ -179,7 +179,6 @@ Resources:
             Sid: AllowImportFindingsToSecHub
             Action:
               - "securityhub:BatchImportFindings"
-              - "securityhub:DescribeHub"
             Resource: "*"
           - Effect: Allow
             Sid: AllowS3BucketPutObject
