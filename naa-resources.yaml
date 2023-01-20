@@ -37,6 +37,8 @@ Metadata:
           - Regions
           - ScopeNameValue
           - ExclusionsFile
+          - FindingsToCSV
+          - FindingsToSH
           - ScheduledAnalysis
           - CronScheduleExpression
 
@@ -46,7 +48,7 @@ Parameters:
     Description: Select a VPC
   SubnetId:
     Type: AWS::EC2::Subnet::Id
-    Description: Select a private subnet with Internet access. (Userdata is dependent on Internet for downloading binaries during EC2 provisioning)
+    Description: Select a private subnet with Internet access. (User data is dependent on Internet for downloading binaries during EC2 provisioning)
   InstanceImageId:
     Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
     Description: Amazon Linux 2 Image
@@ -100,6 +102,20 @@ Parameters:
     Type: "String"
     Description: "Name of the exclusions file which is used to exclude findings from CSV output"
     Default: "naa-exclusions.csv"
+  FindingsToCSV:
+    Type: "String"
+    Description: "Specify YES to output findings to a CSV and have it uploaded to the S3 bucket or NO to disable"
+    Default: "YES"
+    AllowedValues:
+      - "YES"
+      - "NO"
+  FindingsToSH:
+    Type: "String"
+    Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed"
+    Default: "NO"
+    AllowedValues:
+      - "YES"
+      - "NO"
   ScheduledAnalysis:
     Type: "String"
     Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must be manually deleted to remove the cron schedule)"
@@ -155,9 +171,14 @@ Resources:
               - sts:AssumeRole
             Resource: !Sub "arn:${AWS::Partition}:iam::*:role/${IAMNAAExecRole}"
           - Effect: Allow
-            Sid: ActionsPermittedForScriptAccountListGenerationREQUIRED
+            Sid: AllowDescribeOrg
             Action:
               - "organizations:DescribeOrganization"
+            Resource: "*"
+          - Effect: Allow
+            Sid: AllowImportFindingsToSecHub
+            Action:
+              - "securityhub:BatchImportFindings"
             Resource: "*"
           - Effect: Allow
             Sid: AllowS3BucketPutObject
@@ -455,16 +476,16 @@ Resources:
             unzip awscliv2.zip
             ./aws/install
             ln -s /usr/local/bin/aws /usr/local/sbin/aws
-            pip3 install csvkit
+            pip3 install csvkit boto3
             ln -s /usr/local/bin/csvjoin /usr/bin
 
             mkdir /usr/local/naa
 
             #Download the python finding conversion script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-findings2csv.py
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/SecurityHubIntegration/naa-processfindings.py
 
             #Download the naa-script.sh script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
+            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/SecurityHubIntegration/naa-script.sh
 
             chmod +x /usr/local/naa/naa-script.sh
 
@@ -484,6 +505,8 @@ Resources:
             sed -i 's/PARALLELISM="10"/PARALLELISM="${Parallelism}"/' /usr/local/naa/naa-script.sh
             sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
             #S3_EXCLUSION_FILE="true"
+            sed -i 's/FINDINGS_TO_CSV="YES"/FINDINGS_TO_CSV="${FindingsToCSV}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/FINDINGS_TO_SH="NO"/FINDINGS_TO_SH="${FindingsToSH}"/' /usr/local/naa/naa-script.sh
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then

@@ -15,9 +15,9 @@ Resources are provisioned via CloudFormation templates with tunable parameters a
 Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
 
 The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
-The findings are then processed via a Python script, data extracted to build a consolidated CSV file, and findings uploaded to a provisioned S3 bucket.
+The findings are then processed via a Python script, data extracted, and then a consolidated CSV file is created and uploaded to a provisioned S3 bucket, and/or import into Security Hub.
 
-Once findings are reviewed, intended findings can be excluded from future CSV output by adding them to the naa-exclusions.csv file and unintended findings remediated.
+Once findings are reviewed, intended findings can be excluded from future finding output by adding them to the naa-exclusions.csv file and unintended findings remediated.
 
 ## **Videos**
 
@@ -34,7 +34,7 @@ Cross account dataflows are not currently processed at this time due to current 
 
 ## **Technology stack**
 
-VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Python
+VPC (Network Access Analyzer) / EC2 / S3 / SNS  / IAM / Security Hub / Python
 
 ## **Solution Architecture**
 
@@ -64,7 +64,7 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
     Step by step instructions for provisioning the solution and usage.
 
 - naa-script.sh:  
-    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution.
+    Bash script used for processing of Network Access Analyzer scopes in AWS accounts.  Bash script can facilitate the processing of all AWS accounts in an ORG or specific accounts, as well as single or multiple regions. Processing of accounts is performed in parallel. By default, this script utilizes the IAM Role attached to the EC2 Role to assume the IAM role NAAExecRole in the management account to generate a list of member accounts in the AWS Org. The script then uses this list of accounts to provisions a Network Access Analyzer scope in the accounts if one doesn’t exist.  It then performs analysis of the scope to identify findings. Once analysis is completed, findings out exported to the EC2 Instance.  Next, findings (JSON format) are processed to output a consolidated CSV file containing all non-excluded findings into a single file and/or imported into Security Hub.  Once all accounts have been assessed, the individual CSV files will be concatenated, duplicate lines removed, and all output files zipped. Finally, the findings file is uploaded to the S3 bucket which was provisioned as part of this solution.
     >Note: This script has tunable variables within the script itself (See appendix for more details).
 
 - naa-resources.yaml:  
@@ -82,8 +82,8 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
     resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
     eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80  
 
-- naa-findings2csv.py:  
-    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file.
+- naa-processfindings.py:  
+    Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file and/or Security Hub.
 
 ## **References**
 

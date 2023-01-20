@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: | 
+Description: >
   This template creates an AWS IAM Role which can be assumed by the NAAEC2Role
   
 Parameters:
@@ -38,7 +38,7 @@ Resources:
             Version : "2012-10-17"
             Statement:
             - Effect: Allow
-              Sid: ActionsPermittedForScriptAccountListGenerationREQUIRED
+              Sid: ActionsPermittedForScriptAccountListGeneration
               Action:
                 - "organizations:ListAccounts"
               Resource: "*"
@@ -50,23 +50,22 @@ Resources:
                 - "s3:GetEncryptionConfiguration"
                 - "cloudformation:DescribeStacks"
                 - "cloudformation:ListStackResources"
-                - "ec2:CreateNetworkInsightsAccessScope"
                 - "ec2:CreateTags"
+                - "ec2:DeleteTags"
+                - "ec2:CreateNetworkInsightsAccessScope"
                 - "ec2:DeleteNetworkInsightsAccessScopeAnalysis"
                 - "ec2:DeleteNetworkInsightsAccessScope"
-                - "ec2:DeleteTags"
                 - "ec2:Describe*"
                 - "ec2:Get*"
                 - "ec2:SearchTransitGatewayRoutes"
                 - "ec2:StartNetworkInsightsAccessScopeAnalysis"
                 - "elasticloadbalancing:Describe*"
-                - "network-firewall:Describe*"
                 - "resource-groups:ListGroupResources"
                 - "tag:GetResources"
                 - "tiros:CreateQuery"
                 - "tiros:GetQueryAnswer"
+                - "network-firewall:Describe*"
+                - "network-firewall:List*"
                 - "directconnect:DescribeVirtualInterfaces"
-                - "network-firewall:ListFirewallRuleGroups"
-                - "network-firewall:ListFirewalls"
                 - "directconnect:DescribeDirectConnectGateways"
               Resource: "*"
