@@ -48,7 +48,7 @@ Parameters:
     Description: Select a VPC
   SubnetId:
     Type: AWS::EC2::Subnet::Id
-    Description: Select a private subnet with Internet access. (Userdata is dependent on Internet for downloading binaries during EC2 provisioning)
+    Description: Select a private subnet with Internet access. (User data is dependent on Internet for downloading binaries during EC2 provisioning)
   InstanceImageId:
     Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
     Description: Amazon Linux 2 Image
