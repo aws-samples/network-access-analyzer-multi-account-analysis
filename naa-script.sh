@@ -107,11 +107,11 @@ if [ ! -f $EXCLUSIONS_FILE ]; then
 fi
 
 #Create default aws cli config file with default region for commands if it doesn't exist.
-if [ ! -f ~/.aws/config ]; then
-    echo ""
-    echo "AWS Config file not found.  Creating..."
-    aws configure set region us-east-1
-fi
+#if [ ! -f ~/.aws/config ]; then
+#    echo ""
+#    echo "AWS Config file not found.  Creating..."
+#    aws configure set region us-east-1
+#fi
 
 #Capture starting aws sts creds
 capture_starting_session() {
@@ -121,16 +121,19 @@ capture_starting_session() {
 }
 capture_starting_session
 
-# Find AWS Management Account
+# Determine the executing account AWS Number and Partition
+CALLER_IDENTITY_ARN=$(aws sts get-caller-identity --output text --query "Arn")
+AWSPARTITION=$(echo "$CALLER_IDENTITY_ARN" | cut -d: -f2)
 echo ""
-AWSMANAGEMENT=$(aws organizations describe-organization --query Organization.MasterAccountId --output text)
-echo "AWS Management Account: $AWSMANAGEMENT"
-echo ""
+
 
 # Function to Assume Role to Management Account and Create Session
 management_account_session() {
+    AWSMANAGEMENT=$(aws organizations describe-organization --query Organization.MasterAccountId --output text)
+    echo "AWS Organization Management Account: $AWSMANAGEMENT"
+    echo ""
     echo "Assuming IAM Role in Management account to list all AWS Org accounts..."
-    role_credentials=$(aws sts assume-role --role-arn arn:aws:iam::$AWSMANAGEMENT:role/$IAM_CROSS_ACCOUNT_ROLE --role-session-name MgmtAccount --output json)
+    role_credentials=$(aws sts assume-role --role-arn arn:$AWSPARTITION:iam::$AWSMANAGEMENT:role/$IAM_CROSS_ACCOUNT_ROLE --role-session-name MgmtAccount --output json)
     AWS_ACCESS_KEY_ID=$(echo "$role_credentials" | jq -r .Credentials.AccessKeyId)
     AWS_SECRET_ACCESS_KEY=$(echo "$role_credentials" | jq -r .Credentials.SecretAccessKey)
     AWS_SESSION_TOKEN=$(echo "$role_credentials" | jq -r .Credentials.SessionToken)
@@ -146,7 +149,7 @@ return_starting_session() {
 execute_code() {
     #Assume role in each account
     echo "Assessing AWS Account: $1, using Role: $IAM_CROSS_ACCOUNT_ROLE"
-    role_credentials=$(aws sts assume-role --role-arn arn:aws:iam::$1:role/$IAM_CROSS_ACCOUNT_ROLE --role-session-name MgmtAccount --output json)
+    role_credentials=$(aws sts assume-role --role-arn arn:$AWSPARTITION:iam::$1:role/$IAM_CROSS_ACCOUNT_ROLE --role-session-name NAAAnalyze --output json)
     AWS_ACCESS_KEY_ID=$(echo "$role_credentials" | jq -r .Credentials.AccessKeyId)
     AWS_SECRET_ACCESS_KEY=$(echo "$role_credentials" | jq -r .Credentials.SecretAccessKey)
     AWS_SESSION_TOKEN=$(echo "$role_credentials" | jq -r .Credentials.SessionToken)
