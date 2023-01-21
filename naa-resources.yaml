@@ -208,7 +208,7 @@ Resources:
               - "sts:AssumeRole"
       Description: "This role grants necessary permissions for the NAA Script EC2 instance to assume roles in accounts"
       ManagedPolicyArns:
-        - !Sub "arn:${AWS::Partition}:iam::${AWS::Partition}:policy/AmazonSSMManagedInstanceCore"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
       Path: "/"
       RoleName: !Sub "${IAMNAAEC2Role}"
 
