@@ -470,7 +470,7 @@ Resources:
             yum upgrade -y
             
             #Install script dependencies
-            yum install -y jq pip
+            yum install -y jq pip git
             yum remove -y awscli
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
@@ -479,13 +479,9 @@ Resources:
             pip3 install csvkit boto3
             ln -s /usr/local/bin/csvjoin /usr/bin
 
-            mkdir /usr/local/naa
-
-            #Download the python finding conversion script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-processfindings.py
-
-            #Download the naa-script.sh script 
-            wget -P /usr/local/naa https://raw.githubusercontent.com/aws-samples/network-access-analyzer-multi-account-analysis/main/naa-script.sh
+            #Clone Repo
+            cd /usr/local
+            git clone https://github.com/aws-samples/network-access-analyzer-multi-account-analysis naa
 
             chmod +x /usr/local/naa/naa-script.sh
 
