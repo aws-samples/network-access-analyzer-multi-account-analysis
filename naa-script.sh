@@ -78,9 +78,10 @@ if [[ "$S3_EXCLUSION_FILE" == "true" ]]; then
     #If an error occurs with the copy (most likely to initial execution and doens't yet exist), create a local exclusion file and copy to the S3 bucket
     if [ $? = 1 ]; then
         echo "There was an error copying the exclusion file from s3://$S3_BUCKET/$EXCLUSIONS_FILE"
-        echo "If this is the first execution of the script, this is expected as the exclusion file doesn't exist in S3"
         echo ""
+        echo "If this is the first execution of the script, this is expected as the exclusion file doesn't exist in S3"
         echo "A local $EXCLUSIONS_FILE will be created if it doesn't exist and copied to $S3_BUCKET"
+        echo ""
         if [ ! -f $EXCLUSIONS_FILE ]; then
           echo "Local exclusions file file not found.  Creating..."
           echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
