@@ -107,11 +107,11 @@ if [ ! -f $EXCLUSIONS_FILE ]; then
 fi
 
 #Create default aws cli config file with default region for commands if it doesn't exist.
-#if [ ! -f ~/.aws/config ]; then
-#    echo ""
-#    echo "AWS Config file not found.  Creating..."
-#    aws configure set region us-east-1
-#fi
+if [ ! -f ~/.aws/config ]; then
+    echo ""
+    echo "AWS Config file not found.  Creating..."
+    aws configure set region us-east-1
+fi
 
 #Capture starting aws sts creds
 capture_starting_session() {
