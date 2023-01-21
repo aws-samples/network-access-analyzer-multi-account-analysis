@@ -79,7 +79,7 @@ if [[ "$S3_EXCLUSION_FILE" == "true" ]]; then
     if [ $? = 1 ]; then
         echo ""
         echo "There was an error copying the exclusion file from s3://$S3_BUCKET/$EXCLUSIONS_FILE"
-        echo "If this is the first execution of the script, this is expected as the exclusion file doesn't exist in S3"
+        echo "If this is the first execution of the script, this is expected as the exclusion file doesn't yet exist in S3"
         echo "A local $EXCLUSIONS_FILE will be created if it doesn't exist and copied to $S3_BUCKET"
         echo ""
         if [ ! -f $EXCLUSIONS_FILE ]; then
