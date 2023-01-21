@@ -10,7 +10,7 @@
 #       Specify DELETE to direct the script to delete Network Access Analyzer scopes which have been provisioned (located by scope name tag)
 #       In order to REDEPLOY scopes, utilize delete to remove all scopes, modify the Network Access Analyzer JSON file, and then execute with CREATE_ANALYZE
 #   5) Configure SCOPE_NAME_VALUE to specify the name tag which will be assigned to the scope. This tag is used to locate the scope for analysis
-#   6) Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON to CSV conversion
+#   6) Configure EXCLUSIONS_FILE to specify exclusions which will be removed from output during the JSON data parse
 #   7) Configure SCOPE_FILE to specify the file which will contain the Network Access Analyzer scope to be deployed
 #   8) Configure S3_BUCKET to specify the existing S3 bucket which will have findings uploaded to, as well as where the EXCLUSIONS_FILE may be located.
 #   9) Configure PARALLELISM for the number of accounts to process simultaneously
