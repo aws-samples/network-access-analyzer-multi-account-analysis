@@ -180,6 +180,20 @@ In order to exclude known good findings from analysis output, an exclusion proce
 
 ## **Appendix**
 
+### **Update To The Latest Repository Code**
+
+Code updates are made to the GitHub repository to add new functionality and correct potential issues.  
+In order to pull these updates into an existing deployment, a few steps must be made to preserve local script parameter values
+
+1. Change to the directory of the cloned code
+    - cd /usr/local/naa
+2. Stash all local changes (e.g. custom parameters in naa-script.sh)
+    - git stash
+3. Pull the latest files from the repository
+    - git pull
+4. Merge the local stashed changes back into the pulled files
+    - git stash pop
+
 ### **Script Variables**
 
 - SPECIFIC_ACCOUNTID_LIST: List specific accounts (SPACE DELIMITED) if you wish to run the command only against those or leave "allaccounts" to detect and execute against all accounts in the AWS Org
