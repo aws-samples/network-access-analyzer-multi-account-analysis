@@ -97,6 +97,7 @@ def main():
             instance_name = "N/A"
             account = "N/A"
             region = "N/A"
+            partition = "N/A"
             vpc_id = "N/A"
             subnet_id = "N/A"
             resource_id = "N/A"
@@ -153,6 +154,7 @@ def main():
                 split_arn = igw_arn.split(':')
                 region = split_arn[3]
                 account = split_arn[4]
+                partition = split_arn[1]
 
             # Read in file of ENI exclusions (if it exists) so they are skipped from the output
             # Open file which contains ENI exclusions
@@ -173,6 +175,7 @@ def main():
                     finding_details = {
                         "account": account,
                         "region": region,
+                        "partition": partition,
                         "vpc_id": vpc_id,
                         "subnet_id": subnet_id,
                         "instance_id": instance_id,
@@ -194,21 +197,29 @@ def main():
         # Closing file
         f.close()
 
-def get_account_id():
+def get_local_env():
     client = boto3.client("sts")
-    return client.get_caller_identity()["Account"]
+    sts_arn = client.get_caller_identity()["Arn"]
+    split_arn = sts_arn.split(':')
+    partition = split_arn[1]
+    account = split_arn[4]
+    local_env = {
+        "partition": partition,
+        "account": account
+    }
+    return local_env
 
 def map_naa_finding_to_sh(finding_details):
     naa_finding = []
     finding_hash = hashlib.sha256(f"{finding_details['resource_id']}-{finding_details['sgrule_cidr']}-{finding_details['sgrule_portrange']}".encode()).hexdigest()
-    finding_id = (f"arn:aws:securityhub:{finding_details['region']}:{finding_details['account']}:vpn/naa/{finding_hash}")
-    local_account_id = get_account_id()
+    finding_id = (f"arn:{finding_details['partition']}:securityhub:{finding_details['region']}:{finding_details['account']}:vpn/naa/{finding_hash}")
+    local_env = get_local_env()
     naa_finding.append({
         "SchemaVersion": "2018-10-08",
         "Id": finding_id,
-        "ProductArn": (f"arn:aws:securityhub:{finding_details['region']}:{local_account_id}:product/{local_account_id}/default"),
+        "ProductArn": (f"arn:{finding_details['partition']}:securityhub:{finding_details['region']}:{local_env['account']}:product/{local_env['account']}/default"),
         "GeneratorId": "NetworkAccessAnalzyer",
-        "AwsAccountId": local_account_id,
+        "AwsAccountId": local_env['account'],
         'ProductFields': {
                 'ProviderName': 'Network Access Analyzer'
             },
@@ -231,7 +242,7 @@ def map_naa_finding_to_sh(finding_details):
             {
                 'Type': "Other",
                 'Id': finding_details['resource_id']+"_"+finding_details['sgrule_portrange'],
-                "Partition": "aws",
+                "Partition": finding_details['partition'],
                 'Region': finding_details['region'],
                 'Details': {'Other': finding_details}
             }
