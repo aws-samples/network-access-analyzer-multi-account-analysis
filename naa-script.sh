@@ -295,7 +295,7 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
     echo ""
 
     #Remove previously processed data and zip
-    rm -f naaoutput/naa-findings*.csv naaoutput/naa-unprocessed*.zip
+    rm -f naaoutput/naa-findings*.csv naaoutput/naa-unprocessed*.zip naaoutput/naa-processfindingsresults*.txt
 
     #Generate a list of individual output files and process them into csv with python
     FINDING_FILES=$(ls naaoutput/naa-unprocessed*.json)
@@ -303,18 +303,18 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
     #Loop through files and process from json into csv
     for finding in $FINDING_FILES; do
         {
-            echo "Processing file: $finding" | tee -a naaoutput/naa-processfindingsresults.txt
-            python3 ./naa-processfindings.py  -i $finding -o naaoutput/naa-findings-$OUTPUT_SUFFIX.csv -e $EXCLUSIONS_FILE -c $FINDINGS_TO_CSV -s $FINDINGS_TO_SH >> naaoutput/naa-processfindingsresults.txt 2>&1
+            echo "Processing file: $finding" | tee -a naaoutput/naa-processfindingsresults-$OUTPUT_SUFFIX.txt
+            python3 ./naa-processfindings.py  -i $finding -o naaoutput/naa-findings-$OUTPUT_SUFFIX.csv -e $EXCLUSIONS_FILE -c $FINDINGS_TO_CSV -s $FINDINGS_TO_SH >> naaoutput/naa-processfindingsresults-$OUTPUT_SUFFIX.txt 2>&1
         }
     done
 
     #Zip all individual findings into single file for archive
     echo ""
     echo "Zip files"
-    zip naaoutput/naa-unprocessed-$OUTPUT_SUFFIX.zip naaoutput/naa-unprocessed*.json naaoutput/naa-processfindingsresults.txt
+    zip naaoutput/naa-unprocessed-$OUTPUT_SUFFIX.zip naaoutput/naa-unprocessed*.json naaoutput/naa-processfindingsresults-$OUTPUT_SUFFIX.txt
 
     #Remove unprocessed finding files which now exist within the zip file
-    rm -f naaoutput/naa-unprocessed-*.json naaoutput/naa-processfindingsresults.txt
+    rm -f naaoutput/naa-unprocessed-*.json
 
     #If the analysis contains findings, copy zip file to S3 bucket (A CSV file with 1 row contains only a header and no findings)
     NAAFINDINGSWC=$(wc -l < naaoutput/naa-findings-$OUTPUT_SUFFIX.csv)
