@@ -110,7 +110,7 @@ fi
 if [ ! -f ~/.aws/config ]; then
     echo ""
     echo "AWS Config file not found.  Creating..."
-    aws configure set region us-east-1
+    aws configure set region `aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]'`
 fi
 
 #Capture starting aws sts creds
