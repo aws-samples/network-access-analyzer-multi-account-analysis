@@ -54,9 +54,14 @@ Cron can be configured to automatically execute the /usr/local/naa/naa-script.sh
 **AWS Account Analysis**  
 ![AWS Account Analysis](docs/images/AWSAccountAnalysis.png)
 
-**Report Example (Split into two halves)**  
-![ReportExample01](docs/images/ReportExample01.png)
-![ReportExample02](docs/images/ReportExample02.png)
+**Report Example**  
+CSV Output: (Split into two halves)  
+![CSVReportExample01](docs/images/CSVReportExample01.png)
+![CSVReportExample02](docs/images/CSVReportExample02.png)
+
+Security Hub Findings Dashboard:  
+![SHReportExample01](docs/images/SHReportExample01.png)
+![SHReportExample02](docs/images/SHReportExample02.png)
 
 ## **Related Resources**
 
