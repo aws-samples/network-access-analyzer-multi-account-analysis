@@ -258,6 +258,7 @@ def map_naa_finding_to_sh(finding_details):
                         response['FailedCount']))
         except Exception as error:
             print("Error: ", error)
+            print("Verify Security Hub is enabled in this account and region, as well as IAM permissions are correct via the EC2 IAM Policy")
 
 if __name__ == "__main__":
     main()
