@@ -5,7 +5,8 @@
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
 
 This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to a CSV and/or import into Security Hub which does not yet exist natively within Network Access Analyzer. (Future roadmap items)  
-The primary use case of this solution is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).
+
+**The primary use case this solution solves is to identify all permitted data paths originating from the Internet (IGW - Internet Gateway) to Network Interfaces (ENI - Elastic Network Interface) within AWS Accounts across the entire AWS Organization.**  
 
 ## **Overview**
 
@@ -15,7 +16,7 @@ Resources are provisioned via CloudFormation templates with tunable parameters a
 
 Bash scripting is used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.  
 
-A Network Access Analyzer scope is provisioned across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
+A Network Access Analyzer scope is provisioned across all AWS accounts and specified regions.  
 
 The findings are then processed via a Python script, data extracted, and then a consolidated CSV file is created and uploaded to a provisioned S3 bucket, and/or import into Security Hub.  
 
