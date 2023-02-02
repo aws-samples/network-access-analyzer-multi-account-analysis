@@ -9,7 +9,7 @@ Common ways you can use Network Access Analyzer is :
 1. Identify resources in your account that have internet accessibility to Internet Gateway
 2. Validate your VPCs are appropriately segmented.
 
-### **How is Network Access Analyzer different than other tools which identify Security Groups with overly permissive / higher-risk rules?**
+### **How is Network Access Analyzer different than other tools (AWS Trusted Advisor / AWS Firewall Manager) which identify Security Groups with overly permissive / higher-risk rules?**
 
 Network Access Analyzer evaluates end-to-end network reachability conditions and not just a single component such as the Security Group during the analysis.  
 As an example, in order to generate findings to show resources which are accessible from the Internet, the Internet, VPC Route Tables, Subnet NACLs, Public IP on ENI and Security Groups are all taken into account. If any of these components prevent the communication, a finding will not be generated.  
