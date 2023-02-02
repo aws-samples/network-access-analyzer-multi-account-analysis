@@ -3,16 +3,18 @@
 ## **Summary**
 
 [Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS.  
-You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
+You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.  
+Common ways you can use Network Access Analyzer is :
 
-### **How is Network Access Analyzer different than other tools (AWS Trusted Advisor / AWS Firewall Manager) which identify Security Groups with overly permissive / higher-risk rules?**
+1. Identify resources in your account that have internet accessibility to Internet Gateway
+2. Validate your VPCs are appropriately segmented.
 
-Network Access Analyzer is a feature which generates high fidelity findings by evaluating end-to-end network reachability conditions and not just a single component such as the Security Group.  
-As an example, in order to generate findings to show resources which are accessible from the Internet, the IGW, VPC, Route Tables, Subnet NACLs, and Security Groups are all taken into account.  
-If any of these components prevent the communication, a finding will not be generated.  
+### **How is Network Access Analyzer different than other tools which identify Security Groups with overly permissive / higher-risk rules?**
 
-**The primary use case this solution solves is to identify all permitted data paths originating from the Internet (IGW - Internet Gateway) to Network Interfaces (ENI - Elastic Network Interface) within AWS Accounts across the entire AWS Organization.**  
-This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to a CSV and/or import into Security Hub which does not yet exist natively within Network Access Analyzer. (Future roadmap items)  
+Network Access Analyzer evaluates end-to-end network reachability conditions and not just a single component such as the Security Group during the analysis. As an example, in order to generate findings to show resources which are accessible from the Internet, the Internet, VPC Route Tables, Subnet NACLs, Public IP on ENI and Security Groups are all taken into account. If any of these components prevent the communication, a finding will not be generated. So, if an instance had an open security group allowing traffic to 0/0, but was in a private subnet that is not routable to any IGW, then no finding would be generated for that instance. This generates high fidelity findings of resources that indeed have network reachability to the Internet Gateway.
+
+**The primary use case this solution solves is to identify all permitted data paths originating from the Internet (IGW - Internet Gateway) to Network Interfaces (ENI - Elastic Network Interface) within AWS Accounts across the entire AWS Organization.**
+This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to a CSV and/or import into Security Hub which does not yet exist natively within Network Access Analyzer.  
 
 ## **Overview**
 
