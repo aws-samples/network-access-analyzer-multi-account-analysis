@@ -176,6 +176,11 @@ Resources:
               - "organizations:DescribeOrganization"
             Resource: "*"
           - Effect: Allow
+            Sid: AllowDescribeAZ
+            Action:
+              - "ec2:DescribeAvailabilityZones"
+            Resource: "*"
+          - Effect: Allow
             Sid: AllowImportFindingsToSecHub
             Action:
               - "securityhub:BatchImportFindings"
@@ -511,7 +516,7 @@ Resources:
             
       Tags:
         - Key: "Name"
-          Value: "naaec2"
+          Value: "NAA_EC2"
 
 Outputs:
   NAAEC2Role:

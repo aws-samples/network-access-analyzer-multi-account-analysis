@@ -39,7 +39,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NAAEC2 instance is provisioned.
+- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NAA_EC2 instance is provisioned.
 
 ## **Implementation Procedure**
 
@@ -124,7 +124,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
     9. Review the summary
     10. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
 
-4. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAAEC2 Instance.
+4. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAA_EC2 Instance.
     >Note: SSM Access is granted as part of the IAM Role which is provisioned and attached to the EC2 instance. If unable to connect, validate the subnet has Internet access and reboot the instance as the agent needs to communicate with the AWS SSM endpoint.
 
     ![InstanceConnect](docs/images/InstanceConnect.png)
