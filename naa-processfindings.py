@@ -246,7 +246,7 @@ def map_naa_finding_to_sh(finding_details):
         'Resources': [
             {
                 'Type': "Other",
-                'Id': finding_details['resource_id']+"_"+finding_details['sgrule_portrange'],
+                'Id': finding_details['resource_id']+"_"+finding_details['sgrule_portrange']+"_"+finding_details['region'],
                 "Partition": finding_details['partition'],
                 'Region': finding_details['region'],
                 'Details': {'Other': finding_details}
