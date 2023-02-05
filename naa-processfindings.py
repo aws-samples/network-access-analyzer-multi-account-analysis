@@ -203,9 +203,14 @@ def get_local_env():
     split_arn = sts_arn.split(':')
     partition = split_arn[1]
     account = split_arn[4]
+
+    session = boto3.Session()
+    region = session.region_name
+
     local_env = {
         "partition": partition,
-        "account": account
+        "account": account,
+        "region": region
     }
     return local_env
 
@@ -217,7 +222,7 @@ def map_naa_finding_to_sh(finding_details):
     naa_finding.append({
         "SchemaVersion": "2018-10-08",
         "Id": finding_id,
-        "ProductArn": (f"arn:{finding_details['partition']}:securityhub:{finding_details['region']}:{local_env['account']}:product/{local_env['account']}/default"),
+        "ProductArn": (f"arn:{local_env['partition']}:securityhub:{local_env['region']}:{local_env['account']}:product/{local_env['account']}/default"),
         "GeneratorId": "NetworkAccessAnalzyer",
         "AwsAccountId": local_env['account'],
         'ProductFields': {
