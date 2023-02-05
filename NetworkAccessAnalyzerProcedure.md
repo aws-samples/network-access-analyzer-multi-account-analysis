@@ -39,7 +39,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NAAEC2 instance is provisioned.
+- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NAA_EC2 instance is provisioned.
 
 ## **Implementation Procedure**
 
