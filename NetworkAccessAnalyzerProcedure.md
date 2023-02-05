@@ -124,7 +124,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
     9. Review the summary
     10. Check the box for "The following resource(s) require capabilities: [AWS::IAM::Role]" and Create Stack
 
-4. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAAEC2 Instance.
+4. Log into the AWS account where the NAA Resources stack was deployed using SSM Connect and access the NAA_EC2 Instance.
     >Note: SSM Access is granted as part of the IAM Role which is provisioned and attached to the EC2 instance. If unable to connect, validate the subnet has Internet access and reboot the instance as the agent needs to communicate with the AWS SSM endpoint.
 
     ![InstanceConnect](docs/images/InstanceConnect.png)
