@@ -176,11 +176,6 @@ Resources:
               - "organizations:DescribeOrganization"
             Resource: "*"
           - Effect: Allow
-            Sid: AllowDescribeAZ
-            Action:
-              - "ec2:DescribeAvailabilityZones"
-            Resource: "*"
-          - Effect: Allow
             Sid: AllowImportFindingsToSecHub
             Action:
               - "securityhub:BatchImportFindings"
