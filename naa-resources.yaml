@@ -516,7 +516,7 @@ Resources:
             
       Tags:
         - Key: "Name"
-          Value: "NAA_EC2"
+          Value: "NetworkAccessAnalyzerEC2"
 
 Outputs:
   NAAEC2Role:
