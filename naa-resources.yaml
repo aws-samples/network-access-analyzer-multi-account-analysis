@@ -38,7 +38,8 @@ Metadata:
           - ScopeNameValue
           - ExclusionsFile
           - FindingsToCSV
-          - FindingsToSH
+          - FindingsToSecurityHub
+          - EmailNotificationsForSecurityHub
           - ScheduledAnalysis
           - CronScheduleExpression
 
@@ -109,9 +110,16 @@ Parameters:
     AllowedValues:
       - "YES"
       - "NO"
-  FindingsToSH:
+  FindingsToSecurityHub:
     Type: "String"
     Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed"
+    Default: "NO"
+    AllowedValues:
+      - "YES"
+      - "NO"
+  EmailNotificationsForSecurityHub:
+    Type: "String"
+    Description: "Specify YES to send email notifications when findings are import into Security Hub.  Requires an Email Address to be provided, as well as, FindingsToSecurityHub to be YES"
     Default: "NO"
     AllowedValues:
       - "YES"
@@ -149,6 +157,11 @@ Conditions:
       - Fn::Equals:
           - ""
           - Ref: EmailAddress
+
+  SHEmailConfirmed:
+    Fn::Equals:
+      - "YES"
+      - Ref: EmailNotificationsForSecurityHub
 
 Resources:
   NAAEC2RolePolicy:
@@ -297,6 +310,67 @@ Resources:
           RetryPolicy:
             MaximumRetryAttempts: 4
             MaximumEventAgeInSeconds: 400
+
+  SHEventRule:
+      Condition: SHEmailConfirmed
+      Type: "AWS::Events::Rule"
+      Properties:
+        Description: Network Access Analyzer Security Hub Bucket Event
+        Name: SecurityHub-NetworkAccessAnalyzer-Internet_Ingress
+        EventPattern:
+          source:
+            - aws.securityhub
+          detail-type:
+            - Security Hub Findings - Imported
+          detail:
+            findings:
+              Title:
+              - Network Access Analyzer - Ingress Data Path From Internet
+        State: ENABLED
+        Targets:
+          - Arn: !Ref NAASNSTopic
+            Id: NAASNSTopic
+            InputTransformer:
+              InputPathsMap:
+                "description": "$.detail.findings[0].Description"
+                "id": "$.detail.findings[0].Resources[0].Id"
+                "updatedat": "$.detail.findings[0].UpdatedAt"
+                "account": "$.detail.findings[0].Resources[0].Details.Other.account"
+                "region": "$.detail.findings[0].Resources[0].Details.Other.region"
+                "partition": "$.detail.findings[0].Resources[0].Details.Other.partition"
+                "vpc_id": "$.detail.findings[0].Resources[0].Details.Other.vpc_id"
+                "subnet_id": "$.detail.findings[0].Resources[0].Details.Other.subnet_id"
+                "instance_id": "$.detail.findings[0].Resources[0].Details.Other.instance_id"
+                "instance_arn": "$.detail.findings[0].Resources[0].Details.Other.instance_arn"
+                "instance_name": "$.detail.findings[0].Resources[0].Details.Other.instance_name"
+                "resource_id": "$.detail.findings[0].Resources[0].Details.Other.resource_id"
+                "resource_arn": "$.detail.findings[0].Resources[0].Details.Other.resource_arn"
+                "secgroup_id": "$.detail.findings[0].Resources[0].Details.Other.secgroup_id"
+                "sgrule_direction": "$.detail.findings[0].Resources[0].Details.Other.sgrule_direction"
+                "sgrule_cidr": "$.detail.findings[0].Resources[0].Details.Other.sgrule_cidr"
+                "sgrule_protocol": "$.detail.findings[0].Resources[0].Details.Other.sgrule_protocol"
+                "sgrule_portrange": "$.detail.findings[0].Resources[0].Details.Other.sgrule_portrange"
+              InputTemplate: |
+                "Description: <description>"
+                "Id: <id>"
+                "UpdateAt: <updatedat>"
+                "Account: <account>"
+                "Region: <region>"
+                "Partition: <partition>"
+                "VPC_ID: <vpc_id>"
+                "Instance_ID: <instance_id>"
+                "Instance_ARN: <instance_arn>"
+                "Instance_Name: <instance_name>"
+                "Resource_ID: <resource_id>"
+                "Resource_ARN: <resource_arn>"
+                "Secgroup_ID: <secgroup_id>"
+                "Secgroup_Rule_direction: <sgrule_direction>"
+                "SecGroup_Rule_CIDR: <sgrule_cidr>"
+                "SecGroup_Rule_Protocol: <sgrule_protocol>"
+                "SecGroup_Rule_PortRange: <sgrule_portrange>"
+            RetryPolicy:
+              MaximumRetryAttempts: 4
+              MaximumEventAgeInSeconds: 400
 
   NAASG:
     Type: "AWS::EC2::SecurityGroup"
@@ -507,7 +581,7 @@ Resources:
             sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
             #S3_EXCLUSION_FILE="true"
             sed -i 's/FINDINGS_TO_CSV="YES"/FINDINGS_TO_CSV="${FindingsToCSV}"/' /usr/local/naa/naa-script.sh
-            sed -i 's/FINDINGS_TO_SH="NO"/FINDINGS_TO_SH="${FindingsToSH}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/FINDINGS_TO_SH="NO"/FINDINGS_TO_SH="${FindingsToSecurityHub}"/' /usr/local/naa/naa-script.sh
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then
