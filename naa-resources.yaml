@@ -152,7 +152,7 @@ Conditions:
           - ""
           - Ref: KeyPairName
 
-  EmailProvided: 
+  EmailProvided:
     Fn::Not:
       - Fn::Equals:
           - ""
