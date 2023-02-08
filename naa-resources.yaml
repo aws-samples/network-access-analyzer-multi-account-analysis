@@ -31,7 +31,7 @@ Metadata:
           - IAMNAAEC2Role
           - IAMNAAExecRole
       - Label:
-          default: "Network Access Analyzer Script Parameters"
+          default: "Network Access Analyzer Script Parameters (Note: After EC2 provisioning, local files mentioned in the description must be modified to further adjust)"
         Parameters:
           - Parallelism
           - Regions
@@ -78,7 +78,7 @@ Parameters:
     Default: "NAAExecRole"
   Parallelism:
     Type: String
-    Description: "Specify the number of accounts to assess in parallel"
+    Description: "Specify the number of accounts to assess in parallel (Utilized in /usr/local/naa/naa-script.sh)"
     Default: 10
     AllowedValues:
       - 10
@@ -86,7 +86,7 @@ Parameters:
       - 14
   Regions:
     Type: String
-    Description: "Specify the regions which will be analyzed.  Use space separation when listing multiple regions (e.g. us-east-1 us-east-2)"
+    Description: "Specify the regions which will be analyzed.  Use space separation when listing multiple regions (e.g. us-east-1 us-east-2) (Utilized in /usr/local/naa/naa-script.sh)"
     Default: us-east-1
   KeyPairName:
     Type: "String"
@@ -97,22 +97,22 @@ Parameters:
     Default: "127.0.0.1/32"
   ScopeNameValue:
     Type: "String"
-    Description: "Name of Network Access Analyzer scope tag which is assigned during deployment"
+    Description: "Name of Network Access Analyzer scope tag which is assigned during deployment (Utilized in /usr/local/naa/naa-script.sh)"
     Default: "naa-external-ingress"
   ExclusionsFile:
     Type: "String"
-    Description: "Name of the exclusions file which is used to exclude findings from CSV output"
+    Description: "Name of the exclusions file which is used to exclude findings from CSV output (Utilized in /usr/local/naa/naa-script.sh)"
     Default: "naa-exclusions.csv"
   FindingsToCSV:
     Type: "String"
-    Description: "Specify YES to output findings to a CSV and have it uploaded to the S3 bucket or NO to disable"
+    Description: "Specify YES to output findings to a CSV and have it uploaded to the S3 bucket or NO to disable (Utilized in /usr/local/naa/naa-script.sh)"
     Default: "YES"
     AllowedValues:
       - "YES"
       - "NO"
   FindingsToSecurityHub:
     Type: "String"
-    Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed"
+    Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed (Utilized in /usr/local/naa/naa-script.sh)"
     Default: "NO"
     AllowedValues:
       - "YES"
@@ -126,14 +126,14 @@ Parameters:
       - "NO"
   ScheduledAnalysis:
     Type: "String"
-    Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must be manually deleted to remove the cron schedule)"
+    Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Utilized in /etc/cron.d/naa-schedule.  Delete this file to remove the cron schedule)"
     Default: "true"
     AllowedValues:
       - true
       - false
   CronScheduleExpression:
     Type: "String"
-    Description: "Specify the frequency of Network Access Analyzer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Note: After initial EC2 provisioning, /etc/cron.d/naa-schedule must manually adjusted)"
+    Description: "Specify the frequency of Network Access Analyzer analysis via cron expression (e.g. Midnight on Sunday 0 0 * * 0 OR Midnight on First Sunday of each month 0 0 * 1-12 0) (Utilized in /etc/cron.d/naa-schedule)"
     Default: "0 0 * * 0"
 
 Mappings: 
