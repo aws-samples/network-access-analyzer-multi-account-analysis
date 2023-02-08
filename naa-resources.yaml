@@ -25,6 +25,7 @@ Metadata:
           default: "SNS Configuration"
         Parameters:
           - EmailAddress          
+          - EmailNotificationsForSecurityHub
       - Label:
           default: "IAM Configuration"
         Parameters:
@@ -39,7 +40,6 @@ Metadata:
           - ExclusionsFile
           - FindingsToCSV
           - FindingsToSecurityHub
-          - EmailNotificationsForSecurityHub
           - ScheduledAnalysis
           - CronScheduleExpression
 
