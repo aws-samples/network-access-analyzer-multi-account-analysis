@@ -42,8 +42,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
 
 ## **Limitations**
 
-Network Access Analyzer analyzes resources within a single account.  
-Cross account dataflows are not currently processed at this time due to current limitations of the Network Access Analyzer service. (Future Network Access Analyzer roadmap item)
+Cross-account data flows are not currently processed at this time due to current limitations of the AWS VPC Network Access Analyzer feature.
 
 ## **Technology stack**
 
