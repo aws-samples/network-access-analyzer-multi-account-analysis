@@ -84,7 +84,7 @@ if [[ "$S3_EXCLUSION_FILE" == "true" ]]; then
         echo ""
         if [ ! -f $EXCLUSIONS_FILE ]; then
           echo "Local exclusions file file not found.  Creating..."
-          echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
+          echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange,sgrule_protocol" > $EXCLUSIONS_FILE
         fi
         aws s3 cp $EXCLUSIONS_FILE s3://$S3_BUCKET/$EXCLUSIONS_FILE
         if [ $? = 1 ]; then
@@ -96,14 +96,14 @@ elif [[ "$S3_EXCLUSION_FILE" == "false" ]]; then
     #Create local exclusions file if it doesn't exist
     if [ ! -f $EXCLUSIONS_FILE ]; then
         echo "Local exclusions file file not found.  Creating..."
-        echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
+        echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange,sgrule_protocol" > $EXCLUSIONS_FILE
     fi
 fi
 
 #Create default exclusions file if it doesn't exist
 if [ ! -f $EXCLUSIONS_FILE ]; then
     echo "Exclusions file file not found.  Creating..."
-    echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange" > $EXCLUSIONS_FILE
+    echo "resource_id,secgroup_id,sgrule_cidr,sgrule_portrange,sgrule_protocol" > $EXCLUSIONS_FILE
 fi
 
 #Create default aws cli config file with default region for commands if it doesn't exist.

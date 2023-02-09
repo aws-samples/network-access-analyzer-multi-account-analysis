@@ -152,7 +152,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
 ## **Future Analysis Executions**
 
 - Automated via Cron:  
-    If during deployment, the Cloudformation paramater "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist on the EC2 instance.  
+    If during deployment, the Cloudformation parameter "ScheduledAnalysis" was set to true, a cron file "/etc/cron.d/naa-schedule" will exist on the EC2 instance.  
     This cron entry will automatically execute the naa-script.sh based on the schedule set within the cron file.  
     If the schedule needs to be adjusted, the "/etc/cron.d/naa-schedule" file can be manually tuned with an editor.
 - Manual:  
@@ -176,8 +176,8 @@ In order to exclude known good findings from analysis output, an exclusion proce
   - If false, the script will generate a local EXCLUSIONS_FILE if it doesn't exist  
 - Edit this file and specify details about findings (one per line) in the file to exclude them from the NAA finding output
   - If S3_EXCLUSION_FILE is true, edit the EXCLUSIONS_FILE in the S3 bucket and if false, edit the local EC2 EXCLUSIONS_FILE  
-    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
-    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80  
+    Utilize the format: resource_id,secgroup_id,sgrule_cidr,sgrule_portrange,sgrule_protocol  
+    e.g. eni-06332dd60bb1f9a02,sg-0d3ffa3243275bc9a,0.0.0.0/0,80 to 80,tcp  
 
 ## **Appendix**
 

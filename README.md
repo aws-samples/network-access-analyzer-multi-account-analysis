@@ -96,8 +96,8 @@ Security Hub Findings Dashboard:
     The CSV formatted file which allows known good findings to be excluded from future analysis finding output. Findings are pattern matched and must be exact.  
 
     Format:  
-    resource_id,secgroup_id,sgrule_cidr,sgrule_portrange  
-    eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80  
+    resource_id,secgroup_id,sgrule_cidr,sgrule_portrange,sgrule_protocol  
+    eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80,tcp  
 
 - naa-processfindings.py:  
     Python script which extracts specific fields from the JSON output and exports non-excluded findings into a CSV file and/or Security Hub.

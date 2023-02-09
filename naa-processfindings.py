@@ -161,7 +161,7 @@ def main():
             with open(EXCLUSIONF) as exclusioncsvfile:
                 naa_exclusions = csv.reader(exclusioncsvfile, delimiter=',')
                 for row in naa_exclusions:
-                    if ((resource_id == row[0]) and (secgroup_id == row[1]) and (sgrule_cidr == row[2]) and (sgrule_portrange == row[3])):
+                    if ((resource_id == row[0]) and (secgroup_id == row[1]) and (sgrule_cidr == row[2]) and (sgrule_portrange == row[3]) and (sgrule_protocol == row[4])):
                         skip_finding = True
                         continue
 
@@ -216,7 +216,7 @@ def get_local_env():
 
 def map_naa_finding_to_sh(finding_details):
     naa_finding = []
-    finding_hash = hashlib.sha256(f"{finding_details['resource_id']}-{finding_details['sgrule_cidr']}-{finding_details['sgrule_portrange']}".encode()).hexdigest()
+    finding_hash = hashlib.sha256(f"{finding_details['resource_id']}-{finding_details['sgrule_cidr']}-{finding_details['sgrule_protocol']}-{finding_details['sgrule_portrange']}-{finding_details['region']}".encode()).hexdigest()
     finding_id = (f"arn:{finding_details['partition']}:securityhub:{finding_details['region']}:{finding_details['account']}:vpn/naa/{finding_hash}")
     local_env = get_local_env()
     naa_finding.append({
@@ -246,7 +246,7 @@ def map_naa_finding_to_sh(finding_details):
         'Resources': [
             {
                 'Type': "Other",
-                'Id': finding_details['resource_id']+"_"+finding_details['sgrule_portrange']+"_"+finding_details['region'],
+                'Id': (f"{finding_details['resource_id']},{finding_details['sgrule_cidr']},{finding_details['sgrule_protocol']},{finding_details['sgrule_portrange']},{finding_details['region']}".replace('/', '_')),
                 "Partition": finding_details['partition'],
                 'Region': finding_details['region'],
                 'Details': {'Other': finding_details}
