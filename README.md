@@ -75,6 +75,9 @@ Security Hub Findings Dashboard:
 ![SHReportExample01](docs/images/SHReportExample01.png)
 ![SHReportExample02](docs/images/SHReportExample02.png)
 
+Network Access Analyzer Dashboard (Per Account):  
+![NAADashboard01.png](docs/images/NAADashboard01.png)
+
 ## **Related Resources**
 
 - NetworkAccessAnalyzerProcedure.md:  
