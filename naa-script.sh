@@ -184,7 +184,7 @@ execute_code() {
                 #Monitor Status of AnalysisID.  While processing, Status is running and when done, changes to succeeded
                 i=0
                 Status="running"
-                while [ $i -lt 240 ]
+                while [ $i -lt 360 ]
                 do
                     ((i++))
                     Status=$(aws ec2 --region $region describe-network-insights-access-scope-analyses --network-insights-access-scope-analysis-id $AnalysisId | jq -r '.NetworkInsightsAccessScopeAnalyses[].Status')
@@ -325,9 +325,12 @@ if [[ "$SCRIPT_EXECUTION_MODE" == "CREATE_ANALYZE" ]]; then
         aws s3 cp ./naaoutput s3://$S3_BUCKET --recursive --exclude "*" --include "naa*.zip" --include "naa-findings*.csv"
     fi
 
-    echo ""
-    echo "view output at command line with:"
-    echo "column -s, -t < naaoutput/naa-findings-$OUTPUT_SUFFIX.csv | less -#2 -N -S"
+    if [ -f "naaoutput/naa-findings-$OUTPUT_SUFFIX.csv" ]; then
+        echo ""
+        echo "view output at command line with:"
+        echo "column -s, -t < naaoutput/naa-findings-$OUTPUT_SUFFIX.csv | less -#2 -N -S"
+    fi
+
 fi
 
 echo ""
