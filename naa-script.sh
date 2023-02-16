@@ -178,7 +178,7 @@ execute_code() {
                 fi
 
                 #Start Analysis and insert the AnalysisID into variable
-                echo "Account: $1 / Region: $region - Continuing analysis with ScopeID.  Accounts with many resources may take up to one hour"
+                echo "Account: $1 / Region: $region - Continuing analysis with ScopeID.  Accounts with many resources may take up to 1.5 hours"
                 AnalysisId=$(aws ec2 --region $region start-network-insights-access-scope-analysis --network-insights-access-scope-id $ScopeId | jq -r '.NetworkInsightsAccessScopeAnalysis.NetworkInsightsAccessScopeAnalysisId')
 
                 #Monitor Status of AnalysisID.  While processing, Status is running and when done, changes to succeeded
