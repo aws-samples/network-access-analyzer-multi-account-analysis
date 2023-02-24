@@ -2,34 +2,11 @@
 
 ## **Table of Contents**
 
-1. [Summary](#summary)
-2. [Overview](#overview)
-3. [Prerequisites](#prerequisites)
-4. [Implementation Procedure](#implementation-procedure)
-5. [Future Analysis Executions](#future-analysis-executions)
-6. [Exclusions](#exclusions)
-7. [Appendix](#appendix)
-
-## **Summary**
-
-[Network Access Analyzer](https://docs.aws.amazon.com/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html) is a VPC feature that identifies unintended network access to your resources on AWS. You can use Network Access Analyzer to specify your network access requirements and to identify potential network paths that do not meet your specified requirements.
-
-This solution has been built to extend the functionality of organization-wide analysis, finding exclusion, and export to CSV and/or Security Hub which does not yet exist natively within Network Access Analyzer. (Future roadmap items)
-
-The default design of the script is to deploy a single common Network Access Analyzer scope across all AWS accounts and specified regions to identify all permitted data paths originating from the Internet (IGW) to an ENI (Elastic Network Interface).  
-The findings are then processed via a Python script, data extracted, and then a consolidated CSV file is created and uploaded to a provisioned S3 bucket, and/or import into Security Hub.
-
-## **Overview**
-
-Step by step instructions are provided (NetworkAccessAnalyzerProcedure.md) to deploy this solution.
-
-Resources are provisioned via CloudFormation templates with tunable parameters at the time of deployment, as well as through the naa-script.sh script.
-
-Bash scripting was used to automate the provisioning and analysis of Network Access Analyzer scopes across multiple AWS accounts in parallel.
-
-Once findings are reviewed, intended findings can be excluded from future finding output by adding them to the naa-exclusions.csv file and unintended findings remediated.
-
-[AWS re:Inforce 2022 - Validate effective network access controls on AWS (NIS202)](https://youtu.be/aN2P2zeQek0)
+1. [Prerequisites](#prerequisites)
+2. [Implementation Procedure](#implementation-procedure)
+3. [Future Analysis Executions](#future-analysis-executions)
+4. [Exclusions](#exclusions)
+5. [Appendix](#appendix)
 
 ## **Prerequisites**
 
@@ -39,7 +16,7 @@ Once findings are reviewed, intended findings can be excluded from future findin
 
 - Accessing the EC2 Instance via Systems Manager Session Manager requires that the EC2 instance have output Internet access so that the SSM Agent can reach the SSM service endpoint. The EC2 instance should be deployed in a private subnet with outbound Internet access (Via NAT Gateway or VPC Endpoints), however if it is deployed in a public subnet, an Elastic IP may need to be attached to the instance with the appropriate routing
 
-- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NetworkAccessanalyzerEC2 instance is provisioned.
+- If using the Findings to Security Hub feature, Security Hub must be enabled in the account and region where the NetworkAccessAnalyzerEC2 instance is provisioned.
 
 ## **Implementation Procedure**
 
