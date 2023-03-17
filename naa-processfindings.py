@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 SECURITYHUB = boto3.client('securityhub')
 
 def main():
-    FIELDS = ['account','region','vpc_id','subnet_id','instance_id','instance_arn','instance_name','resource_id','resource_arn','secgroup_id','sgrule_direction','sgrule_cidr','sgrule_protocol','sgrule_portrange']
+    FIELDS = ['account','region','vpc_id','subnet_id','loadbalancer_id','loadbalancer_arn','instance_id','instance_arn','instance_name','resource_id','resource_arn','secgroup_id','sgrule_direction','sgrule_cidr','sgrule_protocol','sgrule_portrange']
     EXCLUSIONF = ''
     OUTPUTF = ''
     INPUTF = ''
@@ -107,6 +107,8 @@ def main():
             sgrule_cidr = "N/A"
             sgrule_protocol = "N/A"
             sgrule_portrange = "N/A"
+            loadbalancer_id = "N/A"
+            loadbalancer_arn = "N/A"
             skip_finding = False
 
             findingId = Finding['FindingId']
@@ -116,6 +118,9 @@ def main():
                     if 'network-interface' in component['Component']['Arn']:
                         resource_id = component['Component']['Id']
                         resource_arn = component['Component']['Arn']
+                    if 'loadbalancer' in component['Component']['Arn']:
+                        loadbalancer_id = component['Component']['Id']
+                        loadbalancer_arn = component['Component']['Arn']
                 if 'internet-gateway' in component['Component']['Arn']:
                     igw_id = component['Component']['Id']
                     igw_arn = component['Component']['Arn']
@@ -164,11 +169,14 @@ def main():
                     if ((resource_id == row[0]) and (secgroup_id == row[1]) and (sgrule_cidr == row[2]) and (sgrule_portrange == row[3]) and (sgrule_protocol == row[4])):
                         skip_finding = True
                         continue
+                    if ((loadbalancer_id == row[0])):
+                        skip_finding = True
+                        continue
 
             if not skip_finding:
                 #If CSV output is enabled, write a row to the CSV file
                 if (FINDINGSCSVBOOL == "YES"):
-                    rows.append([account,region,vpc_id,subnet_id,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
+                    rows.append([account,region,vpc_id,subnet_id,loadbalancer_id,loadbalancer_arn,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
 
                 #If Security Hub import is enabled, create a dict and call SH function
                 if (FINDINGSSHBOOL == "YES"):
@@ -178,6 +186,8 @@ def main():
                         "partition": partition,
                         "vpc_id": vpc_id,
                         "subnet_id": subnet_id,
+                        "loadbalancer_id": loadbalancer_id,
+                        "loadbalancer_arn": loadbalancer_arn,
                         "instance_id": instance_id,
                         "instance_arn": instance_arn,
                         "instance_name": instance_name,
