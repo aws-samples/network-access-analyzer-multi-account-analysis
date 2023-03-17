@@ -103,7 +103,7 @@ Network Access Analyzer Dashboard (Per Account):
     eni-06335dd6bbb1f9a02,sg-0d3fda324d275bc9a,0.0.0.0/0,80 to 80,tcp  
 
     If resources such as EC2 are provisioned behind a loadbalancer using Auto Scaling Group (ASG), the resource_id will change as instances are provisioned.  
-    In the case, the entire loadbalancer and all resources behind it can be excluded by adding the loadbalancer_id to the EXCLUSIONS_FILE  
+    In this case, the entire loadbalancer and all resources behind it can be excluded by adding the loadbalancer_id to the EXCLUSIONS_FILE  
     Utilize the format: loadbalancer_id,,,,  
     e.g. app/MyELB/346ge44ebd488fee,,,,  
   >Note: Both exclusion formats can be combined in the same file
