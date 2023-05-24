@@ -113,7 +113,7 @@ Parameters:
   FindingsToSecurityHub:
     Type: "String"
     Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed (Utilized in /usr/local/naa/naa-script.sh)"
-    Default: "NO"
+    Default: "YES"
     AllowedValues:
       - "YES"
       - "NO"
