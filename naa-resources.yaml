@@ -120,7 +120,7 @@ Parameters:
   EmailNotificationsForSecurityHub:
     Type: "String"
     Description: "Specify YES to send email notifications when findings are import into Security Hub.  Requires an Email Address to be provided, as well as, FindingsToSecurityHub to be YES"
-    Default: "NO"
+    Default: "YES"
     AllowedValues:
       - "YES"
       - "NO"
