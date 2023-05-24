@@ -555,9 +555,10 @@ Resources:
             sudo dnf upgrade -y
             
             #Install script dependencies
-            sudo dnf install -y jq pip git
+            sudo dnf install -y jq pip git cronie cronie-anacron
             pip install csvkit boto3
             ln -s /usr/local/bin/csvjoin /usr/bin
+            sudo systemctl enable crond.service && systemctl start crond.service
 
             #Clone Repo
             cd /usr/local
