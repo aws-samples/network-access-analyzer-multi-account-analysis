@@ -556,7 +556,6 @@ Resources:
             
             #Install script dependencies
             sudo dnf install -y jq pip git
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             pip install csvkit boto3
             ln -s /usr/local/bin/csvjoin /usr/bin
 
