@@ -587,7 +587,7 @@ Resources:
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then
-              echo "${CronScheduleExpression} root BASH_ENV=/etc/profile /usr/local/naa/naa-script.sh >> /usr/local/naa/naa-cron.log 2>&1" > /etc/cron.d/naa-schedule
+              echo "${CronScheduleExpression} root BASH_ENV=/etc/profile cd /usr/local/naa && /usr/local/naa/naa-script.sh >> /usr/local/naa/naa-cron.log 2>&1" > /etc/cron.d/naa-schedule
             fi
             
       Tags:
