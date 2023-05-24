@@ -52,8 +52,8 @@ Parameters:
     Description: Select a private subnet with Internet access. (User data is dependent on Internet for downloading binaries during EC2 provisioning)
   InstanceImageId:
     Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
-    Description: Amazon Linux 2 Image
-    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+    Description: Amazon Linux 2023 Image
+    Default: "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
   InstanceType:
     Type: String
     Description: "Specify the instance size to use"
@@ -552,16 +552,12 @@ Resources:
             #!/bin/bash
 
             #Upgrade the OS
-            yum upgrade -y
+            sudo dnf upgrade -y
             
             #Install script dependencies
-            yum install -y jq pip git
-            yum remove -y awscli
+            sudo dnf install -y jq pip git
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            ./aws/install
-            ln -s /usr/local/bin/aws /usr/local/sbin/aws
-            pip3 install csvkit boto3
+            pip install csvkit boto3
             ln -s /usr/local/bin/csvjoin /usr/bin
 
             #Clone Repo
