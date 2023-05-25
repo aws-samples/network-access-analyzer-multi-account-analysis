@@ -105,25 +105,25 @@ Parameters:
     Default: "naa-exclusions.csv"
   FindingsToCSV:
     Type: "String"
-    Description: "Specify YES to output findings to a CSV and have it uploaded to the S3 bucket or NO to disable (Utilized in /usr/local/naa/naa-script.sh)"
-    Default: "YES"
+    Description: "Specify true to output findings to a CSV and have it uploaded to the S3 bucket or false to disable (Utilized in /usr/local/naa/naa-script.sh)"
+    Default: "true"
     AllowedValues:
-      - "YES"
-      - "NO"
+      - "true"
+      - "false"
   FindingsToSecurityHub:
     Type: "String"
-    Description: "Specify YES to import findings into Security Hub or NO to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed (Utilized in /usr/local/naa/naa-script.sh)"
-    Default: "YES"
+    Description: "Specify true to import findings into Security Hub or false to disable. Note: Security Hub must be enabled in the AWS account where the NAA EC2 is deployed (Utilized in /usr/local/naa/naa-script.sh)"
+    Default: "true"
     AllowedValues:
-      - "YES"
-      - "NO"
+      - "true"
+      - "false"
   EmailNotificationsForSecurityHub:
     Type: "String"
-    Description: "Specify YES to send email notifications when findings are import into Security Hub.  Requires an Email Address to be provided, as well as, FindingsToSecurityHub to be YES"
-    Default: "YES"
+    Description: "Specify true to send email notifications when findings are import into Security Hub.  Requires an Email Address to be provided, as well as, FindingsToSecurityHub to be true"
+    Default: "true"
     AllowedValues:
-      - "YES"
-      - "NO"
+      - "true"
+      - "false"
   ScheduledAnalysis:
     Type: "String"
     Description: "Schedule automated analysis via cron. If true, the CronScheduleExpression parameter is used, else it is ignored (Utilized in /etc/cron.d/naa-schedule.  Delete this file to remove the cron schedule)"
@@ -160,7 +160,7 @@ Conditions:
 
   SHEmailConfirmed:
     Fn::Equals:
-      - "YES"
+      - "true"
       - Ref: EmailNotificationsForSecurityHub
 
 Resources:
@@ -582,8 +582,8 @@ Resources:
             sed -i 's/PARALLELISM="10"/PARALLELISM="${Parallelism}"/' /usr/local/naa/naa-script.sh
             sed -i 's/REGION_LIST="us-east-1"/REGION_LIST="${Regions}"/' /usr/local/naa/naa-script.sh
             #S3_EXCLUSION_FILE="true"
-            sed -i 's/FINDINGS_TO_CSV="YES"/FINDINGS_TO_CSV="${FindingsToCSV}"/' /usr/local/naa/naa-script.sh
-            sed -i 's/FINDINGS_TO_SH="NO"/FINDINGS_TO_SH="${FindingsToSecurityHub}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/FINDINGS_TO_CSV="true"/FINDINGS_TO_CSV="${FindingsToCSV}"/' /usr/local/naa/naa-script.sh
+            sed -i 's/FINDINGS_TO_SH="true"/FINDINGS_TO_SH="${FindingsToSecurityHub}"/' /usr/local/naa/naa-script.sh
             
             #Set cron if ScheduledAnalysis == true and use the CronScheduleExpression value
             if [[ "${ScheduledAnalysis}" == "true" ]]; then
