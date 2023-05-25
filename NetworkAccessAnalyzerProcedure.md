@@ -204,6 +204,6 @@ In order to pull these updates into an existing deployment, a few steps must be 
     Set to false to utilize a local exclusion file without the S3 download copy
     >Default Value: true
 - Configure FINDINGS_TO_CSV to specify if findings should be output to CSV
-    >Default Value: YES
+    >Default Value: true
 - Configure FINDINGS_TO_SH to specify if findings should be import into Security Hub
-    >Default Value: NO
+    >Default Value: true

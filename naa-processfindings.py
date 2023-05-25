@@ -175,11 +175,11 @@ def main():
 
             if not skip_finding:
                 #If CSV output is enabled, write a row to the CSV file
-                if (FINDINGSCSVBOOL == "YES"):
+                if (FINDINGSCSVBOOL == "true"):
                     rows.append([account,region,vpc_id,subnet_id,loadbalancer_id,loadbalancer_arn,instance_id,instance_arn,instance_name,resource_id,resource_arn,secgroup_id,sgrule_direction,sgrule_cidr,sgrule_protocol,sgrule_portrange])
 
                 #If Security Hub import is enabled, create a dict and call SH function
-                if (FINDINGSSHBOOL == "YES"):
+                if (FINDINGSSHBOOL == "true"):
                     finding_details = {
                         "account": account,
                         "region": region,
