@@ -41,9 +41,9 @@ PARALLELISM="10"
 
 S3_EXCLUSION_FILE="true"
 
-FINDINGS_TO_CSV="YES"
+FINDINGS_TO_CSV="true"
 
-FINDINGS_TO_SH="NO"
+FINDINGS_TO_SH="true"
 
 #########################################
 
