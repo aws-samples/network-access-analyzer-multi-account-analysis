@@ -24,7 +24,7 @@ This solution was designed with the following in mind:
 
 [https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/create-a-report-of-network-access-analyzer-findings-for-inbound-internet-access-in-multiple-aws-accounts.html](https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/create-a-report-of-network-access-analyzer-findings-for-inbound-internet-access-in-multiple-aws-accounts.html)
 
-​The code in this repository helps you set up the following target architectures (Either finding delivery option can be used or both):  
+The code in this repository helps you set up the following target architectures. You can configure one option or both.
 ​
 CSV Finding Output:
 ![TargetArchitectureDiagramOption1](docs/images/NAAArchitectureOption01.png)
