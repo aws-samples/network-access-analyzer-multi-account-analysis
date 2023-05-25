@@ -1,4 +1,4 @@
-# **Create a report of Network Access Analyzer findings for inbound internet access in multiple AWS accounts**
+# **Network Access Analyzer Multi-Account Analysis**
 
 ## Summary
 
