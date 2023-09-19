@@ -479,7 +479,7 @@ Resources:
             Resource: !Sub "arn:${AWS::Partition}:s3:::${S3LoggingBucket}/*"
             Condition:
               ArnLike:
-                aws:SourceArn: !GetAtt S3LoggingBucket.Arn
+                aws:SourceArn: !GetAtt S3Bucket.Arn
               StringEquals:
                 aws:SourceAccount: !Sub "${AWS::AccountId}"
           - Sid: Deny non-HTTPS access
