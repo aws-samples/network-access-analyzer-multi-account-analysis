@@ -471,6 +471,17 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
+          - Action:
+              - 's3:PutObject'
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Resource: !Sub "arn:${AWS::Partition}:s3:::${S3LoggingBucket}/*"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !GetAtt S3Bucket.Arn
+              StringEquals:
+                aws:SourceAccount: !Sub "${AWS::AccountId}"
           - Sid: Deny non-HTTPS access
             Effect: Deny
             Principal: "*"
@@ -490,7 +501,6 @@ Resources:
           - id: W35
             reason: "S3 access logging is not enable as this is the logging bucket"
     Properties:
-      AccessControl: LogDeliveryWrite
       BucketName: !Sub "${BucketName}-accesslogs-${AWS::AccountId}-${AWS::Region}"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
@@ -507,6 +517,9 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
       VersioningConfiguration:
         Status: Enabled
       Tags:
@@ -554,6 +567,9 @@ Resources:
             #Upgrade the OS
             sudo dnf upgrade -y
             
+            #Sleep 5 seconds to allow dnf to release RPM lock (if exists)
+            sleep 5
+
             #Install script dependencies
             sudo dnf install -y jq pip git cronie cronie-anacron
             pip install csvkit boto3
