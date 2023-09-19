@@ -248,7 +248,7 @@ execute_code() {
 
 #Monitor the number of background processes and return to task execution for loop when bg jobs less than PARALLELISM limit
 process_monitor() {
-    while [ "$(jobs | wc -l)" -ge $PARALLELISM ]
+    while [ "$(jobs | grep Running | wc -l)" -ge $PARALLELISM ]
     do
         sleep 2
     done
@@ -274,7 +274,7 @@ echo ""
 
 #Process all accounts in the $ACCOUNTS_TO_PROCESS array, 8 at a time, and send them to the background
 for accountId in $ACCOUNTS_TO_PROCESS; do
-    test "$(jobs | wc -l)" -ge $PARALLELISM && process_monitor || true
+    test "$(jobs | grep Running | wc -l)" -ge $PARALLELISM && process_monitor || true
     {
         execute_code $accountId
     } &
