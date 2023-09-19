@@ -567,6 +567,9 @@ Resources:
             #Upgrade the OS
             sudo dnf upgrade -y
             
+            #Sleep 5 seconds to allow dnf to release RPM lock (if exists)
+            sleep 5
+
             #Install script dependencies
             sudo dnf install -y jq pip git cronie cronie-anacron
             pip install csvkit boto3
